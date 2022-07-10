@@ -1,24 +1,30 @@
 import { useEffect, useRef } from 'react';
-import TileRow from './Tile';
 
 
-export default function Canvas({ tileRows }) {
+export default function Canvas({ tileColumns }) {
   const canvasRef = useRef(null);
-  const draw = ctx => {
-    ctx.fillStyle = 'green';
-    ctx.fillRect(20,20,100,100);
-  }
-
+  
   useEffect(() => {
+    const draw = ctx => {
+      tileColumns.forEach((col, i) => {
+        col.forEach((tile, j) => {
+          if (tile > 0) {
+            ctx.fillStyle = 'green';
+            ctx.fillRect(i * 10, j * 10, 10, 10);
+          } else if (tile === 1) {
+            ctx.fillStyle = 'blue';
+            ctx.fillRect(i * 10, j * 10, 10, 10);
+          }
+        })
+      });
+      return ctx;
+    }
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     draw(ctx);
-    },[draw])
+    },[tileColumns])
   return (
     <canvas ref={canvasRef} id='canvas' width='600' height='600'>
-      {
-        tileRows.map((tileRow, i) => <TileRow key={ i } tileRow={ tileRow } />)
-      }
     </canvas>
   );
 }

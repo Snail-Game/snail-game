@@ -3,11 +3,11 @@ import { useState } from 'react';
 import Canvas from './Canvas';
 
 function App() {
-  const [tileRows, setTileRows] = useState([[1,1,1,1,1],[1,0,0,0,1],[1,0,0,1,1],[1,0,1,0,1],[1,1,1,1,1]]);
+  const [tileColumns, setTileColumns] = useState([[1,1,1,1,1,1,1,1],[1,0,0,0,0,0,0,1],[1,0,0,0,0,0,1,1],[1,0,0,0,0,0,1,1],[1,0,0,0,0,0,1,1],[1,0,1,0,1,0,0,1],[1,1,1,1,1,1,1,1]]);
 
   return (
     <div className="mother">
-        <Canvas tileRows={tileRows} />
+        <Canvas tileColumns={tileColumns} />
     </div>
   );
 }
