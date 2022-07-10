@@ -36,3 +36,11 @@
     transform: rotate(360deg);
   }
 }
+
+#canvas {
+  background-color: lightblue;
+}
+
+.tile {
+  border: 1px solid gray;
+}
