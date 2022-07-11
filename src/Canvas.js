@@ -46,6 +46,7 @@ export default function Canvas() {
       }
     }
     setTileColumns(newArray);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coordinates, cellSize, padding])
   
   useEffect(() => {
