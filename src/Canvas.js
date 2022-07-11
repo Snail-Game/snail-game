@@ -78,7 +78,7 @@ export default function Canvas() {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     draw(ctx);
-  }, [tileColumns, numRows, numColumns, cellSize, padding])
+  }, [tileColumns, numRows, numColumns, cellSize, padding, spaceColor, wallColor])
 
   const handleCellChange = (e) => {
     if (parseInt(e.target.value) > cellSize) {
