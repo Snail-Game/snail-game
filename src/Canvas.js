@@ -13,11 +13,13 @@ export default function Canvas() {
       [1,0,1,0,1,0,0,1],
       [1,1,1,1,1,1,1,1]]);
   const [padding, setPadding] = useState(2);
-  const [cellSize, setCellSize] = useState(40);
+  const [cellSize, setCellSize] = useState(50);
   const [numRows, setNumRows] = useState(8);
   const [numColumns, setNumColumns] = useState(8); 
-  const [canvasWidth, setCanvasWidth] = useState(334);
-  const [canvasHeight, setCanvasHeight] = useState(334);
+  const [canvasWidth, setCanvasWidth] = useState(414); //i.v. manually calculated
+  const [canvasHeight, setCanvasHeight] = useState(414); 
+  const [wallColor, setWallColor] = useState('#506F91');
+  const [spaceColor, setSpaceColor] = useState('#A0DAB6');
   
   useEffect(() => {
     if (tileColumns.length < numColumns) {
@@ -62,10 +64,10 @@ export default function Canvas() {
       tileColumns.forEach((column, i) => {
         column.forEach((tile, j) => {
           if (tile > 0) {
-            ctx.fillStyle = 'lightgrey';
+            ctx.fillStyle = wallColor;
             ctx.fillRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
           } else if (tile === 0) {
-            ctx.fillStyle = 'teal';
+            ctx.fillStyle = spaceColor;
             ctx.fillRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
           }
         })
@@ -101,21 +103,37 @@ export default function Canvas() {
       setCanvasHeight(numRows*(parseInt(e.target.value) + cellSize) - padding);
     }
   }
+
+  const handleWallChange = (e) => {
+    setWallColor(e.target.value);
+    setTileColumns([...tileColumns]);
+  }
+  
+  const handleSpaceChange = (e) => {
+    setSpaceColor(e.target.value);
+    setTileColumns([...tileColumns]);
+  }
   
   return (
     <div id='main'>
       <h1>Snail game map editor</h1>
       <form id='form'>
-        <label>Cell size: </label>
+        <label>Cell size:</label>
         <input type={'number'} value={cellSize} onChange={e => handleCellChange(e)}></input>
+        <label>Wall color:</label>
+        <input type={'color'} value={wallColor} onChange={e => handleWallChange(e)}></input>
         <br></br>
-        <label>Padding: </label>
+        <label>Padding:</label>
         <input type={'number'} value={padding} onChange={e => handlePaddingChange(e)}></input>
+        <label>Empty space color:</label>
+        <input type={'color'} value={spaceColor} onChange={e => handleSpaceChange(e)}></input>
       </form>
-      <button onClick={() => setNumColumns(numColumns + 1)}>Add column</button>
-      <button onClick={() => setNumRows(numRows + 1)}>Add row</button>
-      <button onClick={() => setNumColumns(numColumns - 1)}>Delete column</button>
-      <button onClick={() => setNumRows(numRows - 1)}>Delete row</button>
+      <div id='button-div'>
+        <button onClick={() => setNumColumns(numColumns + 1)}>Add column</button>
+        <button onClick={() => setNumRows(numRows + 1)}>Add row</button>
+        <button onClick={() => setNumColumns(numColumns - 1)}>Delete column</button>
+        <button onClick={() => setNumRows(numRows - 1)}>Delete row</button>
+      </div>
       <canvas ref={canvasRef} id='canvas' width={`${canvasWidth}`} height={`${canvasHeight}`}>
       </canvas>
         

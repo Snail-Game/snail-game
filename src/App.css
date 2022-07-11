@@ -2,12 +2,17 @@ canvas {
   background-color: black;
   margin: 10px;
   border: 8px solid black;
-  align-self: start;
+  align-self: center;
 }
 
 #main {
   display: flex;
   flex-direction: column;
+}
+
+#button-div {
+  display: flex;
+  justify-content: center;
 }
 
 form {
@@ -18,6 +23,7 @@ form {
 button {
   width: fit-content;
   align-self: center;
+  justify-self: center;
   margin: 2px;
 }
 
@@ -27,4 +33,8 @@ h1 {
 
 input {
   width: 35px;
+}
+
+label {
+  margin: 8px;
 }
