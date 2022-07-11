@@ -20,6 +20,33 @@ export default function Canvas() {
   const [canvasHeight, setCanvasHeight] = useState(414); 
   const [wallColor, setWallColor] = useState('#506F91');
   const [spaceColor, setSpaceColor] = useState('#A0DAB6');
+  const [coordinates, setCoordinates] = useState({});
+
+  useEffect(() => {
+    const tileXIndex = Math.floor((coordinates.x - canvasRef.current.offsetLeft - canvasRef.current.scrollLeft + padding) / (cellSize + padding));
+    const tileYIndex = Math.floor((coordinates.y - canvasRef.current.offsetTop - canvasRef.current.scrollTop + padding) / (cellSize + padding));
+    let newArray = [];
+    for (let i = 0; i < tileColumns.length; i++) {
+      let newCol = [];
+      if (i === tileXIndex) {
+        for (let j = 0; j < tileColumns[0].length; j++) {
+          if (j === tileYIndex) {
+            if (tileColumns[i][j] === 0) {
+              newCol[j] = 1;
+            } else {
+              newCol[j] = 0;
+            }
+          } else {
+            newCol[j] = tileColumns[i][j];
+          }
+        }
+        newArray[i] = newCol;
+      } else {
+       newArray[i] = tileColumns[i];
+      }
+    }
+    setTileColumns(newArray);
+  }, [coordinates, cellSize, padding])
   
   useEffect(() => {
     if (tileColumns.length < numColumns) {
@@ -114,6 +141,15 @@ export default function Canvas() {
     setTileColumns([...tileColumns]);
   }
   
+  const handleCanvasClick = (e) => {
+    setCoordinates(
+      {
+        x: e.clientX,
+        y: e.clientY
+      }
+    );
+  }
+
   return (
     <div id='main'>
       <h1>Snail game map editor</h1>
@@ -134,7 +170,7 @@ export default function Canvas() {
         <button onClick={() => setNumColumns(numColumns - 1)}>Delete column</button>
         <button onClick={() => setNumRows(numRows - 1)}>Delete row</button>
       </div>
-      <canvas ref={canvasRef} id='canvas' width={`${canvasWidth}`} height={`${canvasHeight}`}>
+      <canvas onClick={(e) => handleCanvasClick(e)} ref={canvasRef} id='canvas' width={`${canvasWidth}`} height={`${canvasHeight}`}>
       </canvas>
         
     </div>
