@@ -1,12 +1,10 @@
-import './App.css';
-import Canvas from './Canvas';
+import "./App.css";
+import TestLevel from "./components/TestLevel";
 
 function App() {
-
-
   return (
     <div className="mother">
-        <Canvas />
+      <TestLevel />
     </div>
   );
 }
