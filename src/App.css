@@ -9,6 +9,10 @@ canvas {
   display: flex;
   flex-direction: column;
 }
+.mother {
+background-color: black;
+color: white;
+}
 
 #button-div {
   display: flex;
@@ -37,4 +41,12 @@ input {
 
 label {
   margin: 8px;
+}
+
+.snail {
+  position: absolute;
+  top: 300px;
+  left: 400px;
+  width: 70px;
+  height: 80px;
 }
