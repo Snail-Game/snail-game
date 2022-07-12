@@ -1,7 +1,13 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 
 export default function Canvas() {
   const canvasRef = useRef(null);
+  const padding = 2;
+  const cellSize = 64;
+  const canvasWidth = 526; //i.v. manually calculated
+  const canvasHeight = 526;
+  const wallColor = "#506F91";
+  const spaceColor = "#A0DAB6";
   const [tileColumns, setTileColumns] = useState([
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 1],
@@ -12,26 +18,10 @@ export default function Canvas() {
     [1, 0, 0, 0, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1],
   ]);
-  const [padding, setPadding] = useState(2);
-  const [cellSize, setCellSize] = useState(64);
-  const [numRows, setNumRows] = useState(8);
-  const [numColumns, setNumColumns] = useState(8);
-  const [canvasWidth, setCanvasWidth] = useState(526); //i.v. manually calculated
-  const [canvasHeight, setCanvasHeight] = useState(526);
-  const [wallColor, setWallColor] = useState("#506F91");
-  const [spaceColor, setSpaceColor] = useState("#A0DAB6");
-  const [mouseCoordinates, setMouseCoordinates] = useState({});
-  const [playerPosition, setPlayerPosition] = useState({ x: 0, y: 0 });
   const [activeTile, setActiveTile] = useState({ x: 0, y: 0 });
 
-  const player = new Image();
+  const player = useMemo(() => {return new Image()}, []);
   player.src = process.env.PUBLIC_URL + "/images/snail.png";
-
-  if (tileColumns[0][0] === 1) {
-    // wall logic
-    // player cannot move here
-    // enemy cannot move here
-  }
 
   useEffect(() => {
     const draw = (ctx) => {
@@ -54,8 +44,14 @@ export default function Canvas() {
               cellSize
             );
           } else if (tile === 9) {
-            setPlayerPosition({ x: i, y: j });
-            player.onload = function () {
+            ctx.fillStyle = spaceColor;
+            ctx.fillRect(
+              i * (cellSize + padding),
+              j * (cellSize + padding),
+              cellSize,
+              cellSize
+            );
+            player.onload = function() {
               ctx.drawImage(
                 player,
                 i * (cellSize + padding),
@@ -71,9 +67,13 @@ export default function Canvas() {
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     draw(ctx);
-  }, []);
-
-  useEffect(() => {
+  }, [player, tileColumns]);
+  
+  const handleCanvasClick = (e) => {
+    const mouseCoordinates = {
+      x: e.clientX,
+      y: e.clientY,
+    };
     setActiveTile({
       x: Math.floor(
         (mouseCoordinates.x -
@@ -90,15 +90,12 @@ export default function Canvas() {
           (cellSize + padding)
       ),
     });
-  }, [mouseCoordinates]);
-
-  const handleCanvasClick = (e) => {
-    setMouseCoordinates({
-      x: e.clientX,
-      y: e.clientY,
-    });
   };
 
+  useEffect(() => {
+    console.log(activeTile);
+  }, [activeTile])
+  
   return (
     <div id="main">
       <h1>Snail game map editor</h1>
