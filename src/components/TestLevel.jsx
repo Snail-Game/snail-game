@@ -231,9 +231,43 @@ export default function TestLevel() {
           }
         })
       })
-    } else console.log('no player on this tile');
-    setTileColumns(newArray);
-  }, [activeTile])
+    } else if (tileColumns[x][y].id === 3) {
+      const attack = Math.ceil(Math.random() * 2);
+      const enemyAttack = Math.ceil(Math.random() * 6);
+      newArray[x][y].hp -= attack;
+      // draw damage animation here
+      console.log('Enemy takes ' + attack + ' damage!');
+      console.log('You take ' + enemyAttack + ' damage!');
+      if (newArray[x][y].hp <= 0) {
+        newArray[x][y].id = 0;
+        newArray[x][y].hp = 0;
+        console.log('Enemy destroyed!');
+      }
+      newArray.forEach((column, i) => {
+        column.forEach((tile, j) => {
+          if (newArray[i][j].id === 2) {
+            newArray[i][j].id = 0;
+          } else if (newArray[i][j].id === 3) {
+            newArray[i][j].id = 8;
+          } else if (newArray[i][j].id === 9) {
+            newArray[i][j].hp -= enemyAttack;
+            if (newArray[i][j].hp <= 0) {
+              newArray[i][j].id = 0;
+              newArray[i][j].hp = 0;
+              console.log('GAME OVER');
+              // game over screen here
+            } else if (newArray[x][y].id === 0 && newArray[x][y].hp === 0) {
+              newArray[x][y].id = 9;
+              newArray[x][y].hp = newArray[i][j].hp;
+              newArray[i][j].id = 0;
+              newArray[i][j].hp = 0;
+          }
+      }
+      })
+    })
+  } else console.log('no player on this tile');
+  setTileColumns(newArray);
+}, [activeTile])
   
 
   const handleCanvasClick = (e) => {
