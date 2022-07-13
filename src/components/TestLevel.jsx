@@ -122,7 +122,13 @@ export default function TestLevel() {
   useEffect(() => {                              // click-to-move logic
     const x = activeTile.x;
     const y = activeTile.y;
-    const newArray = [...tileColumns];
+    const newArray = [];
+    tileColumns.forEach((column, i) => {
+      newArray[i] = [];
+      column.forEach((tile, j) => {
+        newArray[i][j] = {...tileColumns[i][j]}
+      })
+    })
     if (tileColumns[x][y].id === 9) {
       console.log('player is here');
       if (tileColumns[x + 1][y].id === 0) {
@@ -161,24 +167,32 @@ export default function TestLevel() {
       } else if (tileColumns[x][y - 1].id === 3) {
         newArray[x][y - 1].id = 8;
         }
-      setTileColumns(newArray);
     } else if (tileColumns[x][y].id === 2) {
-      newArray.forEach((col, i) => {
-        col.forEach((tile, j) => {
-          if (newArray[i][j].id === 2 || newArray[i][j].id === 9) {
+      tileColumns.forEach((column, i) => {
+        column.forEach((tile, j) => {
+          if (tileColumns[i][j].id === 2) {
             newArray[i][j].id = 0;
-          } else if (newArray[i][j].id === 3) {
+          } else if (tileColumns[i][j].id === 3) {
             newArray[i][j].id = 8;
+          } else if (tileColumns[i][j].id === 9) {
+            newArray[x][y].hp = tileColumns[i][j].hp;
+            newArray[i][j].id = 0;
+            newArray[i][j].hp = 0;
           }
         })
       })
       newArray[x][y].id = 9;
-      setTileColumns(newArray);
       // enemy moves
       newArray.forEach((column, i) => {
         column.forEach((tile, j) => {
           if (tile.id === 8) {
-            let newArray2 = [...newArray];
+            let newArray2 = [];
+            newArray.forEach((column, i) => {
+              newArray2[i] = [];
+              column.forEach((tile, j) => {
+                newArray2[i][j] = {...tile};
+              })
+            })
             const random = Math.floor(Math.random() * 4 + 1);
             if (random === 1) {
               if (newArray[i][j - 1].id === 0) {
@@ -201,10 +215,16 @@ export default function TestLevel() {
                 newArray2[i][j].id = 0;
               }
             }
+            newArray2.forEach((column, i) => {
+              column.forEach((tile, j) => {
+                newArray[i][j] = {...tile};
+              })
+            })
           }
         })
       })
     } else console.log('no player on this tile');
+    setTileColumns(newArray);
   }, [activeTile])
   
 
@@ -218,32 +238,37 @@ export default function TestLevel() {
         canvasRef.current.offsetLeft +
         window.scrollX - 6) /
         (cellSize + padding)
-    ) >= 0 && Math.floor(
-      (mouseCoordinates.y -
-        canvasRef.current.offsetTop +
-        window.scrollY - 6) /
-        (cellSize + padding)
-    ) >= 0) {
-      setActiveTile({
-        x: Math.floor(
-          (mouseCoordinates.x -
-            canvasRef.current.offsetLeft +
-            window.scrollX - 6) /    // -8 from the canvas border, +2 from? not padding
-            (cellSize + padding)
-        ),
-        y: Math.floor(
-          (mouseCoordinates.y -
-            canvasRef.current.offsetTop +
-            window.scrollY - 6) /
-            (cellSize + padding)
-        ),
-      });
-    }
-  };
+      ) >= 0 && Math.floor(
+        (mouseCoordinates.y -
+          canvasRef.current.offsetTop +
+          window.scrollY - 6) /
+          (cellSize + padding)
+      ) >= 0) {
+        setActiveTile({
+          x: Math.floor(
+            (mouseCoordinates.x -
+              canvasRef.current.offsetLeft +
+              window.scrollX - 6) /    // -8 from the canvas border, +2 from? not padding
+              (cellSize + padding)
+          ),
+          y: Math.floor(
+            (mouseCoordinates.y -
+              canvasRef.current.offsetTop +
+              window.scrollY - 6) /
+              (cellSize + padding)
+          ),
+        });
+      }
+  }
+
+  const checkTileColumns = () => {
+    console.log(tileColumns);
+  }
 
   return (
     <div id="main">
       <h1>Snail game test level</h1>
+      <button onClick={checkTileColumns}>Check tileColumns</button>
       <canvas
         onClick={(e) => handleCanvasClick(e)}
         ref={canvasRef}
