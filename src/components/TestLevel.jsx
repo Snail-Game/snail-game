@@ -197,22 +197,30 @@ export default function TestLevel() {
             if (random === 1) {
               if (newArray[i][j - 1].id === 0) {
                 newArray2[i][j - 1].id = 8;
+                newArray2[i][j - 1].hp = newArray[i][j].hp;
                 newArray2[i][j].id = 0;
+                newArray2[i][j].hp = 0;
               }
             } else if (random === 2) {
               if (newArray[i + 1][j].id === 0) {
                 newArray2[i + 1][j].id = 8;
+                newArray2[i + 1][j].hp = newArray[i][j].hp;
                 newArray2[i][j].id = 0;
+                newArray2[i][j].hp = 0;
               }
             } else if (random === 3) {
               if (newArray[i][j + 1].id === 0) {
                 newArray2[i][j + 1].id = 8;
+                newArray2[i][j + 1].hp = newArray[i][j].hp;
                 newArray2[i][j].id = 0;
+                newArray2[i][j].hp = 0;
               }
             } else if (random === 4) {
               if (newArray[i - 1][j].id === 0) {
                 newArray2[i - 1][j].id = 8;
+                newArray2[i - 1][j].hp = newArray[i][j].hp;
                 newArray2[i][j].id = 0;
+                newArray2[i][j].hp = 0;
               }
             }
             newArray2.forEach((column, i) => {
