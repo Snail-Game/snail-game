@@ -11,21 +11,21 @@ export default function TestLevel() {
   const moveColor = "#FFD700";
   const attackColor = "#bb0a1e";
   const [tileColumns, setTileColumns] = useState([
-    [1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 8, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 8, 0, 1],
-    [1, 0, 9, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1],
+    [{id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}],
+    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
+    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 8, hp: 3}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
+    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 8, hp: 3}, {id: 0, hp: 0}, {id: 1, hp: 0}],
+    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 9, hp: 10}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
+    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
+    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
+    [{id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}],
   ]);
   const [activeTile, setActiveTile] = useState({ x: 0, y: 0 });
 
   const draw = useCallback((ctx) => {
     tileColumns.forEach((column, i) => {
       column.forEach((tile, j) => {
-        if (tile === 1) {
+        if (tile.id === 1) {
           ctx.fillStyle = wallColor;
           ctx.fillRect(
             i * (cellSize + padding),
@@ -33,7 +33,7 @@ export default function TestLevel() {
             cellSize,
             cellSize
           );
-        } else if (tile === 0) {
+        } else if (tile.id === 0) {
           ctx.fillStyle = spaceColor;
           ctx.fillRect(
             i * (cellSize + padding),
@@ -41,7 +41,7 @@ export default function TestLevel() {
             cellSize,
             cellSize
           );
-        } else if (tile === 9) {
+        } else if (tile.id === 9) {
           ctx.fillStyle = spaceColor;
           ctx.fillRect(
             i * (cellSize + padding),
@@ -58,7 +58,7 @@ export default function TestLevel() {
               j * (cellSize + padding)
             );
           };
-        } else if (tile === 8) {
+        } else if (tile.id === 8) {
           ctx.fillStyle = spaceColor;
           ctx.fillRect(
             i * (cellSize + padding),
@@ -75,7 +75,7 @@ export default function TestLevel() {
               j * (cellSize + padding)
             );
           };
-        } else if (tile === 3) {
+        } else if (tile.id === 3) {
           ctx.fillStyle = spaceColor;
           ctx.fillRect(
             i * (cellSize + padding),
@@ -95,7 +95,7 @@ export default function TestLevel() {
           ctx.strokeStyle = attackColor;
             ctx.lineWidth = 3;
             ctx.strokeRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
-        } else if (tile === 2) {
+        } else if (tile.id === 2) {
           ctx.fillStyle = spaceColor;
           ctx.fillRect(
             i * (cellSize + padding),
@@ -123,83 +123,82 @@ export default function TestLevel() {
     const x = activeTile.x;
     const y = activeTile.y;
     const newArray = [...tileColumns];
-    if (tileColumns[x][y] === 9) {
+    if (tileColumns[x][y].id === 9) {
       console.log('player is here');
-      if (tileColumns[x + 1][y] === 0) {
-        newArray[x + 1][y] = 2;
-      } else if (tileColumns[x + 1][y] === 2) {
-        newArray[x + 1][y] = 0;
-      } else if (tileColumns[x + 1][y] === 8) {
-        newArray[x + 1][y] = 3;
-      } else if (tileColumns[x + 1][y] === 3) {
-        newArray[x + 1][y] = 8;
+      if (tileColumns[x + 1][y].id === 0) {
+        newArray[x + 1][y].id = 2;
+      } else if (tileColumns[x + 1][y].id === 2) {
+        newArray[x + 1][y].id = 0;
+      } else if (tileColumns[x + 1][y].id === 8) {
+        newArray[x + 1][y].id = 3;
+      } else if (tileColumns[x + 1][y].id === 3) {
+        newArray[x + 1][y].id = 8;
         }
-      if (tileColumns[x - 1][y] === 0) {
-        newArray[x - 1][y] = 2;
-      } else if (tileColumns[x - 1][y] === 2) {
-        newArray[x - 1][y] = 0;
-      } else if (tileColumns[x - 1][y] === 8) {
-        newArray[x - 1][y] = 3;
-      } else if (tileColumns[x - 1][y] === 3) {
-        newArray[x - 1][y] = 8;
+      if (tileColumns[x - 1][y].id === 0) {
+        newArray[x - 1][y].id = 2;
+      } else if (tileColumns[x - 1][y].id === 2) {
+        newArray[x - 1][y].id = 0;
+      } else if (tileColumns[x - 1][y].id === 8) {
+        newArray[x - 1][y].id = 3;
+      } else if (tileColumns[x - 1][y].id === 3) {
+        newArray[x - 1][y].id = 8;
         }
-      if (tileColumns[x][y + 1] === 0) {
-        newArray[x][y + 1] = 2;
-      } else if (tileColumns[x][y + 1] === 2) {
-        newArray[x][y + 1] = 0;
-      } else if (tileColumns[x][y + 1] === 8) {
-        newArray[x][y + 1] = 3;
-      } else if (tileColumns[x][y + 1] === 3) {
-        newArray[x][y + 1] = 8;
+      if (tileColumns[x][y + 1].id === 0) {
+        newArray[x][y + 1].id = 2;
+      } else if (tileColumns[x][y + 1].id === 2) {
+        newArray[x][y + 1].id = 0;
+      } else if (tileColumns[x][y + 1].id === 8) {
+        newArray[x][y + 1].id = 3;
+      } else if (tileColumns[x][y + 1].id === 3) {
+        newArray[x][y + 1].id = 8;
         }
-      if (tileColumns[x][y - 1] === 0) {
-        newArray[x][y - 1] = 2;
-      } else if (tileColumns[x][y - 1] === 2) {
-        newArray[x][y - 1] = 0;
-      } else if (tileColumns[x][y - 1] === 8) {
-        newArray[x][y - 1] = 3;
-      } else if (tileColumns[x][y - 1] === 3) {
-        newArray[x][y - 1] = 8;
+      if (tileColumns[x][y - 1].id === 0) {
+        newArray[x][y - 1].id = 2;
+      } else if (tileColumns[x][y - 1].id === 2) {
+        newArray[x][y - 1].id = 0;
+      } else if (tileColumns[x][y - 1].id === 8) {
+        newArray[x][y - 1].id = 3;
+      } else if (tileColumns[x][y - 1].id === 3) {
+        newArray[x][y - 1].id = 8;
         }
       setTileColumns(newArray);
-    } else if (tileColumns[x][y] === 2) {
+    } else if (tileColumns[x][y].id === 2) {
       newArray.forEach((col, i) => {
         col.forEach((tile, j) => {
-          if (newArray[i][j] === 2 || newArray[i][j] === 9) {
-            newArray[i][j] = 0;
-          } else if (newArray[i][j] === 3) {
-            newArray[i][j] = 8;
+          if (newArray[i][j].id === 2 || newArray[i][j].id === 9) {
+            newArray[i][j].id = 0;
+          } else if (newArray[i][j].id === 3) {
+            newArray[i][j].id = 8;
           }
         })
       })
-      newArray[x][y] = 9;
+      newArray[x][y].id = 9;
       setTileColumns(newArray);
       // enemy moves
       newArray.forEach((column, i) => {
         column.forEach((tile, j) => {
-          if (tile === 8) {
-            console.log(i + " " + j);
+          if (tile.id === 8) {
             let newArray2 = [...newArray];
             const random = Math.floor(Math.random() * 4 + 1);
             if (random === 1) {
-              if (newArray[i][j - 1] === 0) {
-                newArray2[i][j - 1] = 8;
-                newArray2[i][j] = 0;
+              if (newArray[i][j - 1].id === 0) {
+                newArray2[i][j - 1].id = 8;
+                newArray2[i][j].id = 0;
               }
             } else if (random === 2) {
-              if (newArray[i + 1][j] === 0) {
-                newArray2[i + 1][j] = 8;
-                newArray2[i][j] = 0;
+              if (newArray[i + 1][j].id === 0) {
+                newArray2[i + 1][j].id = 8;
+                newArray2[i][j].id = 0;
               }
             } else if (random === 3) {
-              if (newArray[i][j + 1] === 0) {
-                newArray2[i][j + 1] = 8;
-                newArray2[i][j] = 0;
+              if (newArray[i][j + 1].id === 0) {
+                newArray2[i][j + 1].id = 8;
+                newArray2[i][j].id = 0;
               }
             } else if (random === 4) {
-              if (newArray[i - 1][j] === 0) {
-                newArray2[i - 1][j] = 8;
-                newArray2[i][j] = 0;
+              if (newArray[i - 1][j].id === 0) {
+                newArray2[i - 1][j].id = 8;
+                newArray2[i][j].id = 0;
               }
             }
           }
