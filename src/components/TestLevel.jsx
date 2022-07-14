@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
+import EnemyMoves from './EnemyMoves';
 
 export default function TestLevel() {
   const canvasRef = useRef(null);
@@ -10,6 +11,8 @@ export default function TestLevel() {
   const spaceColor = "#A0DAB6";
   const moveColor = "#FFD700";
   const attackColor = "#bb0a1e";
+  const strength = 3;
+  const enemyStrength = 4;
   const [tileColumns, setTileColumns] = useState([
     [{id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}],
     [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
@@ -122,7 +125,7 @@ export default function TestLevel() {
   useEffect(() => {                              // click-to-move logic
     const x = activeTile.x;
     const y = activeTile.y;
-    const newArray = [];
+    let newArray = [];
     tileColumns.forEach((column, i) => {
       newArray[i] = [];
       column.forEach((tile, j) => {
@@ -130,7 +133,6 @@ export default function TestLevel() {
       })
     })
     if (tileColumns[x][y].id === 9) {
-      console.log('player is here');
       if (tileColumns[x + 1][y].id === 0) {
         newArray[x + 1][y].id = 2;
       } else if (tileColumns[x + 1][y].id === 2) {
@@ -183,57 +185,10 @@ export default function TestLevel() {
       })
       newArray[x][y].id = 9;
       // enemy moves
-      newArray.forEach((column, i) => {
-        column.forEach((tile, j) => {
-          if (tile.id === 8) {
-            let newArray2 = [];
-            newArray.forEach((column, i) => {
-              newArray2[i] = [];
-              column.forEach((tile, j) => {
-                newArray2[i][j] = {...tile};
-              })
-            })
-            const random = Math.floor(Math.random() * 4 + 1);
-            if (random === 1) {
-              if (newArray[i][j - 1].id === 0) {
-                newArray2[i][j - 1].id = 8;
-                newArray2[i][j - 1].hp = newArray[i][j].hp;
-                newArray2[i][j].id = 0;
-                newArray2[i][j].hp = 0;
-              }
-            } else if (random === 2) {
-              if (newArray[i + 1][j].id === 0) {
-                newArray2[i + 1][j].id = 8;
-                newArray2[i + 1][j].hp = newArray[i][j].hp;
-                newArray2[i][j].id = 0;
-                newArray2[i][j].hp = 0;
-              }
-            } else if (random === 3) {
-              if (newArray[i][j + 1].id === 0) {
-                newArray2[i][j + 1].id = 8;
-                newArray2[i][j + 1].hp = newArray[i][j].hp;
-                newArray2[i][j].id = 0;
-                newArray2[i][j].hp = 0;
-              }
-            } else if (random === 4) {
-              if (newArray[i - 1][j].id === 0) {
-                newArray2[i - 1][j].id = 8;
-                newArray2[i - 1][j].hp = newArray[i][j].hp;
-                newArray2[i][j].id = 0;
-                newArray2[i][j].hp = 0;
-              }
-            }
-            newArray2.forEach((column, i) => {
-              column.forEach((tile, j) => {
-                newArray[i][j] = {...tile};
-              })
-            })
-          }
-        })
-      })
+      newArray = EnemyMoves(newArray = {newArray});
     } else if (tileColumns[x][y].id === 3) {
-      const attack = Math.ceil(Math.random() * 2);
-      const enemyAttack = Math.ceil(Math.random() * 6);
+      const attack = Math.ceil(Math.random() * strength);
+      const enemyAttack = Math.ceil(Math.random() * enemyStrength);
       newArray[x][y].hp -= attack;
       // draw damage animation here
       console.log('Enemy takes ' + attack + ' damage!');
@@ -265,6 +220,8 @@ export default function TestLevel() {
       }
       })
     })
+    // enemy moves
+    newArray = EnemyMoves({newArray});
   } else console.log('no player on this tile');
   setTileColumns(newArray);
 }, [activeTile])
