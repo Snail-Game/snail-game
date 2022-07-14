@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import EnemyMoves from './EnemyMoves';
+import { enemyMoves } from './EnemyMoves';
 
 export default function TestLevel() {
   const canvasRef = useRef(null);
@@ -191,7 +191,7 @@ export default function TestLevel() {
         }
       }
       // enemy moves
-      newArray = EnemyMoves(newArray = {newArray});
+      newArray = enemyMoves(newArray, strength, enemyStrength);
     } else if (tileColumns[x][y].id === 3) {
       const attack = Math.ceil(Math.random() * strength);
       const enemyAttack = Math.ceil(Math.random() * enemyStrength);
@@ -233,7 +233,7 @@ export default function TestLevel() {
         }
       }
     // enemy moves
-    newArray = EnemyMoves({newArray});
+    newArray = enemyMoves(newArray, strength, enemyStrength);
   } else console.log('no player on this tile');
   setTileColumns(newArray);
 }, [activeTile])
