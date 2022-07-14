@@ -170,20 +170,26 @@ export default function TestLevel() {
         newArray[x][y - 1].id = 8;
         }
     } else if (tileColumns[x][y].id === 2) {
-      tileColumns.forEach((column, i) => {
+      newArray.forEach((column, i) => {
         column.forEach((tile, j) => {
-          if (tileColumns[i][j].id === 2) {
+          if (newArray[i][j].id === 2) {
             newArray[i][j].id = 0;
-          } else if (tileColumns[i][j].id === 3) {
+          } else if (newArray[i][j].id === 3) {
             newArray[i][j].id = 8;
-          } else if (tileColumns[i][j].id === 9) {
-            newArray[x][y].hp = tileColumns[i][j].hp;
-            newArray[i][j].id = 0;
-            newArray[i][j].hp = 0;
-          }
+          } 
         })
       })
-      newArray[x][y].id = 9;
+      loop1:
+      for (let i = 0; i < newArray.length; i++) {
+        for (let j = 0; j < newArray[i].length; j++) {
+          if (newArray[i][j].id === 9) {
+            newArray[x][y] = {...tileColumns[i][j]};
+            newArray[i][j].id = 0;
+            newArray[i][j].hp = 0;
+            break loop1;
+          }
+        }
+      }
       // enemy moves
       newArray = EnemyMoves(newArray = {newArray});
     } else if (tileColumns[x][y].id === 3) {
@@ -198,13 +204,19 @@ export default function TestLevel() {
         newArray[x][y].hp = 0;
         console.log('Enemy destroyed!');
       }
-      newArray.forEach((column, i) => {
-        column.forEach((tile, j) => {
+      for (let i = 0; i < newArray.length; i++) {
+        for (let j = 0; j < newArray[i].length; j++) {
           if (newArray[i][j].id === 2) {
             newArray[i][j].id = 0;
           } else if (newArray[i][j].id === 3) {
             newArray[i][j].id = 8;
-          } else if (newArray[i][j].id === 9) {
+          }
+        }
+      }
+      loop1:
+      for (let i = 0; i < newArray.length; i++) {
+        for (let j = 0; j < newArray[i].length; j++) {
+          if (newArray[i][j].id === 9) {
             newArray[i][j].hp -= enemyAttack;
             if (newArray[i][j].hp <= 0) {
               newArray[i][j].id = 0;
@@ -212,14 +224,14 @@ export default function TestLevel() {
               console.log('GAME OVER');
               // game over screen here
             } else if (newArray[x][y].id === 0 && newArray[x][y].hp === 0) {
-              newArray[x][y].id = 9;
-              newArray[x][y].hp = newArray[i][j].hp;
+              newArray[x][y] = {...newArray[i][j]};
               newArray[i][j].id = 0;
               newArray[i][j].hp = 0;
+              break loop1;
+            }
           }
+        }
       }
-      })
-    })
     // enemy moves
     newArray = EnemyMoves({newArray});
   } else console.log('no player on this tile');
@@ -260,14 +272,14 @@ export default function TestLevel() {
       }
   }
 
-  const checkTileColumns = () => {
+  const debugTileColumns = () => {
     console.log(tileColumns);
   }
 
   return (
     <div id="main">
       <h1>Snail game test level</h1>
-      <button onClick={checkTileColumns}>Check tileColumns</button>
+      <button onClick={debugTileColumns}>Debug tileColumns</button>
       <canvas
         onClick={(e) => handleCanvasClick(e)}
         ref={canvasRef}
