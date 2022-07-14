@@ -236,6 +236,7 @@ export default function TestLevel() {
     newArray = enemyMoves(newArray, strength, enemyStrength);
   } else console.log('no player on this tile');
   setTileColumns(newArray);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [activeTile])
   
 
