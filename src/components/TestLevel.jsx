@@ -1,7 +1,9 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useLayoutEffect } from "react";
 import { enemyMoves } from './EnemyMoves';
+import Messages from './Messages'
 
 export default function TestLevel() {
+  const messages = useRef(['Don\'t get eaten!', 'Find your way across!']);
   const canvasRef = useRef(null);
   const padding = 2;
   const [cellSize, setCellSize] = useState(64);
@@ -25,6 +27,10 @@ export default function TestLevel() {
   ]);
   const [activeTile, setActiveTile] = useState({ x: 0, y: 0 });
 
+  const addMessage = (message) => {
+    messages.current.push(message);
+  }
+   
   const draw = useCallback((ctx) => {
     tileColumns.forEach((column, i) => {
       column.forEach((tile, j) => {
@@ -121,14 +127,14 @@ export default function TestLevel() {
     return ctx;
   }, [tileColumns, cellSize]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     draw(ctx);
   }, [draw]);
   
-  useEffect(() => {                              // click-to-move logic
+  useEffect(() => {                 // click-to-move logic
     const x = activeTile.x;
     const y = activeTile.y;
     let newArray = [];
@@ -197,18 +203,18 @@ export default function TestLevel() {
         }
       }
       // enemy moves
-      newArray = enemyMoves(newArray, strength, enemyStrength);
+      newArray = enemyMoves(newArray, strength, enemyStrength, addMessage);
     } else if (tileColumns[x][y].id === 3) {
       const attack = Math.ceil(Math.random() * strength);
       const enemyAttack = Math.ceil(Math.random() * enemyStrength);
       newArray[x][y].hp -= attack;
       // draw damage animation here
-      console.log('Enemy takes ' + attack + ' damage!');
-      console.log('You take ' + enemyAttack + ' damage!');
+      addMessage('You attack enemy for ' + attack + ' damage!');
+      addMessage('You take ' + enemyAttack + ' damage!');
       if (newArray[x][y].hp <= 0) {
         newArray[x][y].id = 0;
         newArray[x][y].hp = 0;
-        console.log('Enemy destroyed!');
+        addMessage('Enemy destroyed!');
       }
       for (let i = 0; i < newArray.length; i++) {
         for (let j = 0; j < newArray[i].length; j++) {
@@ -227,7 +233,7 @@ export default function TestLevel() {
             if (newArray[i][j].hp <= 0) {
               newArray[i][j].id = 0;
               newArray[i][j].hp = 0;
-              console.log('GAME OVER');
+              addMessage('GAME OVER');
               // game over screen here
             } else if (newArray[x][y].id === 0 && newArray[x][y].hp === 0) {
               newArray[x][y] = {...newArray[i][j]};
@@ -238,9 +244,9 @@ export default function TestLevel() {
           }
         }
       }
-    // enemy moves
-    newArray = enemyMoves(newArray, strength, enemyStrength);
-  } else console.log('no player on this tile');
+      // enemy moves
+      newArray = enemyMoves(newArray, strength, enemyStrength, addMessage);
+    }
   setTileColumns(newArray);
     // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [activeTile])
@@ -294,9 +300,14 @@ export default function TestLevel() {
   return (
     <div id="main">
       <h1>Snail game test level</h1>
-      <button onClick={debugTileColumns}>Debug tileColumns</button>
-      <button onClick={boardSizeUp}>Increase board size</button>
-      <button onClick={boardSizeDown}>Decrease board size</button>
+      <div id={'ui'}>
+        <Messages messages={messages.current} />
+        <div id={'buttons'}>
+            <button onClick={debugTileColumns}>Debug tileColumns</button>
+            <button onClick={boardSizeUp}>Increase board size</button>
+            <button onClick={boardSizeDown}>Decrease board size</button>
+        </div>
+      </div>
       <canvas
         onClick={(e) => handleCanvasClick(e)}
         ref={canvasRef}

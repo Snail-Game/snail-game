@@ -1,4 +1,4 @@
-export function enemyMoves(newArray, strength, enemyStrength) {
+export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
         newArray.forEach((column, i) => {
           column.forEach((tile, j) => {
             if (tile.id === 8) {
@@ -21,8 +21,8 @@ export function enemyMoves(newArray, strength, enemyStrength) {
                   newArray2[i][j - 1].hp -= enemyAttack;
                   newArray2[i][j].hp -= attack;
                   // draw damage animation here
-                  console.log('Enemy attacks you for ' + enemyAttack + ' damage!');
-                  console.log('Enemy takes ' + attack + ' damage!');
+                  addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
+                  addMessage('Enemy takes ' + attack + ' damage!');
                   if (newArray2[i][j - 1].hp <= 0) {
                     newArray2[i][j - 1].id = 0;
                     newArray2[i][j - 1].hp = 0;
@@ -31,7 +31,7 @@ export function enemyMoves(newArray, strength, enemyStrength) {
                   if (newArray2[i][j].hp <= 0) {
                     newArray2[i][j].id = 0;
                     newArray2[i][j].hp = 0;
-                    console.log('Attacking enemy destroyed!')
+                    addMessage('Attacking enemy destroyed!')
                   }
                 }
               } else if (random === 2) {
@@ -45,17 +45,17 @@ export function enemyMoves(newArray, strength, enemyStrength) {
                   newArray2[i + 1][j].hp -= enemyAttack;
                   newArray2[i][j].hp -= attack;
                   // draw damage animation here
-                  console.log('Enemy attacks you for ' + enemyAttack + ' damage!');
-                  console.log('Enemy takes ' + attack + ' damage!');
+                  addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
+                  addMessage('Enemy takes ' + attack + ' damage!');
                   if (newArray2[i + 1][j].hp <= 0) {
                     newArray2[i + 1][j].id = 0;
                     newArray2[i + 1][j].hp = 0;
-                    console.log('GAME OVER');
+                    addMessage('GAME OVER');
                   }
                   if (newArray2[i][j].hp <= 0) {
                     newArray2[i][j].id = 0;
                     newArray2[i][j].hp = 0;
-                    console.log('Attacking enemy destroyed!')
+                    addMessage('Attacking enemy destroyed!')
                   }
                 }
               } else if (random === 3) {
@@ -69,17 +69,17 @@ export function enemyMoves(newArray, strength, enemyStrength) {
                   newArray2[i][j + 1].hp -= enemyAttack;
                   newArray2[i][j].hp -= attack;
                   // draw damage animation here
-                  console.log('Enemy attacks you for ' + enemyAttack + ' damage!');
-                  console.log('Enemy takes ' + attack + ' damage!');
+                  addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
+                  addMessage('Enemy takes ' + attack + ' damage!');
                   if (newArray2[i][j + 1].hp <= 0) {
                     newArray2[i][j + 1].id = 0;
                     newArray2[i][j + 1].hp = 0;
-                    console.log('GAME OVER');
+                    addMessage('GAME OVER');
                   }
                   if (newArray2[i][j].hp <= 0) {
                     newArray2[i][j].id = 0;
                     newArray2[i][j].hp = 0;
-                    console.log('Attacking enemy destroyed!')
+                    addMessage('Attacking enemy destroyed!')
                   }
                 }
               } else if (random === 4) {
@@ -93,17 +93,17 @@ export function enemyMoves(newArray, strength, enemyStrength) {
                   newArray2[i - 1][j].hp -= enemyAttack;
                   newArray2[i][j].hp -= attack;
                   // draw damage animation here
-                  console.log('Enemy attacks you for ' + enemyAttack + ' damage!');
-                  console.log('Enemy takes ' + attack + ' damage!');
+                  addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
+                  addMessage('Enemy takes ' + attack + ' damage!');
                   if (newArray2[i - 1][j].hp <= 0) {
                     newArray2[i - 1][j].id = 0;
                     newArray2[i - 1][j].hp = 0;
-                    console.log('GAME OVER');
+                    addMessage('GAME OVER');
                   }
                   if (newArray2[i][j].hp <= 0) {
                     newArray2[i][j].id = 0;
                     newArray2[i][j].hp = 0;
-                    console.log('Attacking enemy destroyed!')
+                    addMessage('Attacking enemy destroyed!')
                   }
                 }
               }
