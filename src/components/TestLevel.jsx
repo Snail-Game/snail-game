@@ -4,9 +4,9 @@ import { enemyMoves } from './EnemyMoves';
 export default function TestLevel() {
   const canvasRef = useRef(null);
   const padding = 2;
-  const cellSize = 64;
-  const canvasWidth = 8 * (cellSize + padding) - padding;
-  const canvasHeight = 8 * (cellSize + padding) - padding;
+  const [cellSize, setCellSize] = useState(64);
+  let canvasWidth = 8 * (cellSize + padding) - padding;
+  let canvasHeight = 8 * (cellSize + padding) - padding;
   const wallColor = "#506F91";
   const spaceColor = "#A0DAB6";
   const moveColor = "#FFD700";
@@ -58,7 +58,9 @@ export default function TestLevel() {
             ctx.drawImage(
               player,
               i * (cellSize + padding),
-              j * (cellSize + padding)
+              j * (cellSize + padding),
+              cellSize,
+              cellSize
             );
           };
         } else if (tile.id === 8) {
@@ -75,7 +77,9 @@ export default function TestLevel() {
             ctx.drawImage(
               enemy,
               i * (cellSize + padding),
-              j * (cellSize + padding)
+              j * (cellSize + padding),
+              cellSize,
+              cellSize
             );
           };
         } else if (tile.id === 3) {
@@ -92,7 +96,9 @@ export default function TestLevel() {
             ctx.drawImage(
               enemy,
               i * (cellSize + padding),
-              j * (cellSize + padding)
+              j * (cellSize + padding),
+              cellSize,
+              cellSize
             );
           };
           ctx.strokeStyle = attackColor;
@@ -113,7 +119,7 @@ export default function TestLevel() {
       });
     });
     return ctx;
-  }, [tileColumns]);
+  }, [tileColumns, cellSize]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -276,11 +282,21 @@ export default function TestLevel() {
   const debugTileColumns = () => {
     console.log(tileColumns);
   }
+  
+  const boardSizeUp = () => {
+    setCellSize(cellSize + 2);
+  }
+
+  const boardSizeDown = () => {
+    setCellSize(cellSize - 2);
+  }
 
   return (
     <div id="main">
       <h1>Snail game test level</h1>
       <button onClick={debugTileColumns}>Debug tileColumns</button>
+      <button onClick={boardSizeUp}>Increase board size</button>
+      <button onClick={boardSizeDown}>Decrease board size</button>
       <canvas
         onClick={(e) => handleCanvasClick(e)}
         ref={canvasRef}
