@@ -3,7 +3,7 @@ import TestLevel from "./components/TestLevel";
 
 function App() {
   return (
-    <div className="mother">
+    <div id="app">
       <TestLevel />
     </div>
   );

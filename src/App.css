@@ -1,13 +1,18 @@
 canvas {
-  background-color: black;
+  background-color: darkgreen;
   margin: 10px;
-  border: 8px solid black;
+  border: 8px solid pink;
   align-self: center;
 }
 
 #main {
   display: flex;
   flex-direction: column;
+}
+
+#app {
+background-color: black;
+color: white;
 }
 
 #button-div {
@@ -24,7 +29,7 @@ button {
   width: fit-content;
   align-self: center;
   justify-self: center;
-  margin: 2px;
+  margin: 5px;
 }
 
 h1 {
@@ -37,4 +42,31 @@ input {
 
 label {
   margin: 8px;
+}
+
+#messages {
+  display: flex;
+  flex-direction: column-reverse;
+  align-self: center;
+  border: solid blue 3px;
+  overflow: auto;
+  width: 300px;
+  height: 100px;
+}
+
+#buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+#ui {
+  display: flex;
+  justify-content: center;
+}
+
+#avatar {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
