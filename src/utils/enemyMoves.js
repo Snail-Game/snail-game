@@ -15,7 +15,6 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
             newArray2[i][j - 1] = {...newArray[i][j]};
             newArray2[i][j].id = 0;
             newArray2[i][j].hp = 0;
-            console.log(i, j - 1)
           } else if (newArray[i][j - 1].id === 9) {
             const attack = Math.ceil(Math.random() * strength);
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
@@ -27,7 +26,6 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
             if (newArray2[i][j - 1].hp <= 0) {
               newArray2[i][j - 1].id = 0;
               newArray2[i][j - 1].hp = 0;
-              console.log('GAME OVER');
             }
             if (newArray2[i][j].hp <= 0) {
               newArray2[i][j].id = 0;
@@ -40,7 +38,6 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
             newArray2[i + 1][j] = {...newArray[i][j]};
             newArray2[i][j].id = 0;
             newArray2[i][j].hp = 0;
-            console.log(i + 1, j)
           } else if (newArray[i + 1][j].id === 9) {
             const attack = Math.ceil(Math.random() * strength);
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
@@ -65,7 +62,6 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
             newArray2[i][j + 1] = {...newArray[i][j]};
             newArray2[i][j].id = 0;
             newArray2[i][j].hp = 0;
-            console.log(i, j + 1)
 
           } else if (newArray[i][j + 1].id === 9) {
             const attack = Math.ceil(Math.random() * strength);
@@ -91,7 +87,6 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
             newArray2[i - 1][j] = {...newArray[i][j]};
             newArray2[i][j].id = 0;
             newArray2[i][j].hp = 0;
-            console.log(i - 1, j)
           } else if (newArray[i - 1][j].id === 9) {
             const attack = Math.ceil(Math.random() * strength);
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
