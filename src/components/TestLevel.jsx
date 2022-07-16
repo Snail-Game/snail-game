@@ -8,6 +8,7 @@ export default function TestLevel() {
   const canvasRef = useRef(null);
   const health = useRef(10);
   
+  const waterColor = "#35baf6"
   const wallColor = "#506F91";
   const spaceColor = "#A0DAB6";
   const moveColor = "#FFD700";
@@ -20,14 +21,14 @@ export default function TestLevel() {
   let canvasWidth = 8 * (cellSize + padding) - padding;
   let canvasHeight = 8 * (cellSize + padding) - padding;
   const [tileColumns, setTileColumns] = useState([
-    [{id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}],
-    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
-    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 8, hp: 3}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
-    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 8, hp: 3}, {id: 0, hp: 0}, {id: 1, hp: 0}],
-    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 9, hp: 10}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
-    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
-    [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
-    [{id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}],
+    [{id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}],
+    [{id: 1, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}],
+    [{id: 1, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 8, hp: 3, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}],
+    [{id: 1, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 8, hp: 3, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}],
+    [{id: 1, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 9, hp: 10, status: 'none'}, {id: 0, hp: 0, status: 'water'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}],
+    [{id: 1, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}],
+    [{id: 1, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 0, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}],
+    [{id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}, {id: 1, hp: 0, status: 'none'}],
   ]);
   const [activeTile, setActiveTile] = useState({ x: 0, y: 0 });
 
@@ -35,101 +36,110 @@ export default function TestLevel() {
     messages.current.push(message);
   }
   
-    const draw = useCallback((ctx) => {
-      tileColumns.forEach((column, i) => {
-        column.forEach((tile, j) => {
-          if (tile.id === 1) {
-            ctx.fillStyle = wallColor;
-            ctx.fillRect(
+  const draw = useCallback((ctx) => {
+    tileColumns.forEach((column, i) => {
+      column.forEach((tile, j) => {
+        if (tile.id === 1) {
+          ctx.fillStyle = wallColor;
+          ctx.fillRect(
+            i * (cellSize + padding),
+            j * (cellSize + padding),
+            cellSize,
+            cellSize
+          );
+        } else if (tile.id === 0) {
+          ctx.fillStyle = spaceColor;
+          ctx.fillRect(
+            i * (cellSize + padding),
+            j * (cellSize + padding),
+            cellSize,
+            cellSize
+          );
+        } else if (tile.id === 9) {
+          ctx.fillStyle = spaceColor;
+          ctx.fillRect(
+            i * (cellSize + padding),
+            j * (cellSize + padding),
+            cellSize,
+            cellSize
+          );
+          const player = new Image();
+          player.src = "/images/snail.png";
+          player.onload = function() {
+            ctx.drawImage(
+              player,
               i * (cellSize + padding),
               j * (cellSize + padding),
               cellSize,
               cellSize
             );
-          } else if (tile.id === 0) {
-            ctx.fillStyle = spaceColor;
-            ctx.fillRect(
+          };
+        } else if (tile.id === 8) {
+          ctx.fillStyle = spaceColor;
+          ctx.fillRect(
+            i * (cellSize + padding),
+            j * (cellSize + padding),
+            cellSize,
+            cellSize
+          );
+          const enemy = new Image();
+          enemy.src = "/images/squirrel.png";
+          enemy.onload = function() {
+            ctx.drawImage(
+              enemy,
               i * (cellSize + padding),
               j * (cellSize + padding),
               cellSize,
               cellSize
             );
-          } else if (tile.id === 9) {
-            ctx.fillStyle = spaceColor;
-            ctx.fillRect(
+          };
+        } else if (tile.id === 3) {
+          ctx.fillStyle = spaceColor;
+          ctx.fillRect(
+            i * (cellSize + padding),
+            j * (cellSize + padding),
+            cellSize,
+            cellSize
+          );
+          const enemy = new Image();
+          enemy.src = "/images/squirrel.png";
+          enemy.onload = function() {
+            ctx.drawImage(
+              enemy,
               i * (cellSize + padding),
               j * (cellSize + padding),
               cellSize,
               cellSize
             );
-            const player = new Image();
-            player.src = "/images/snail.png";
-            player.onload = function() {
-              ctx.drawImage(
-                player,
-                i * (cellSize + padding),
-                j * (cellSize + padding),
-                cellSize,
-                cellSize
-              );
-            };
-          } else if (tile.id === 8) {
-            ctx.fillStyle = spaceColor;
-            ctx.fillRect(
-              i * (cellSize + padding),
-              j * (cellSize + padding),
-              cellSize,
-              cellSize
-            );
-            const enemy = new Image();
-            enemy.src = "/images/squirrel.png";
-            enemy.onload = function() {
-              ctx.drawImage(
-                enemy,
-                i * (cellSize + padding),
-                j * (cellSize + padding),
-                cellSize,
-                cellSize
-              );
-            };
-          } else if (tile.id === 3) {
-            ctx.fillStyle = spaceColor;
-            ctx.fillRect(
-              i * (cellSize + padding),
-              j * (cellSize + padding),
-              cellSize,
-              cellSize
-            );
-            const enemy = new Image();
-            enemy.src = "/images/squirrel.png";
-            enemy.onload = function() {
-              ctx.drawImage(
-                enemy,
-                i * (cellSize + padding),
-                j * (cellSize + padding),
-                cellSize,
-                cellSize
-              );
-            };
-            ctx.strokeStyle = attackColor;
-              ctx.lineWidth = 3;
-              ctx.strokeRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
-          } else if (tile.id === 2) {
-            ctx.fillStyle = spaceColor;
-            ctx.fillRect(
-              i * (cellSize + padding),
-              j * (cellSize + padding),
-              cellSize,
-              cellSize
-              )
-              ctx.strokeStyle = moveColor;
-              ctx.lineWidth = 3;
-              ctx.strokeRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
-          }
-        });
+          };
+          ctx.strokeStyle = attackColor;
+            ctx.lineWidth = 3;
+            ctx.strokeRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
+        } else if (tile.id === 2) {
+          ctx.fillStyle = spaceColor;
+          ctx.fillRect(
+            i * (cellSize + padding),
+            j * (cellSize + padding),
+            cellSize,
+            cellSize
+            )
+            ctx.strokeStyle = moveColor;
+            ctx.lineWidth = 3;
+            ctx.strokeRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
+        }
+        if (tile.status === 'water') {
+          ctx.fillStyle = waterColor;
+          ctx.fillRect(
+            i * (cellSize + padding) + 3,
+            j * (cellSize + padding) + 3,
+            cellSize - 6,
+            cellSize - 6
+            )
+        }
       });
-      return ctx;
-    }, [tileColumns, cellSize]);
+    });
+    return ctx;
+  }, [tileColumns, cellSize]);
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -148,44 +158,47 @@ export default function TestLevel() {
         newArray[i][j] = {...tileColumns[i][j]}
       })
     })
-    if (tileColumns[x][y].id === 9) {
-      if (tileColumns[x + 1][y].id === 0) {
+    const highlightTiles = () => {
+      if (newArray[x + 1][y].id === 0) {
         newArray[x + 1][y].id = 2;
-      } else if (tileColumns[x + 1][y].id === 2) {
+      } else if (newArray[x + 1][y].id === 2) {
         newArray[x + 1][y].id = 0;
-      } else if (tileColumns[x + 1][y].id === 8) {
+      } else if (newArray[x + 1][y].id === 8) {
         newArray[x + 1][y].id = 3;
-      } else if (tileColumns[x + 1][y].id === 3) {
+      } else if (newArray[x + 1][y].id === 3) {
         newArray[x + 1][y].id = 8;
         }
-      if (tileColumns[x - 1][y].id === 0) {
+      if (newArray[x - 1][y].id === 0) {
         newArray[x - 1][y].id = 2;
-      } else if (tileColumns[x - 1][y].id === 2) {
+      } else if (newArray[x - 1][y].id === 2) {
         newArray[x - 1][y].id = 0;
-      } else if (tileColumns[x - 1][y].id === 8) {
+      } else if (newArray[x - 1][y].id === 8) {
         newArray[x - 1][y].id = 3;
-      } else if (tileColumns[x - 1][y].id === 3) {
+      } else if (newArray[x - 1][y].id === 3) {
         newArray[x - 1][y].id = 8;
         }
-      if (tileColumns[x][y + 1].id === 0) {
+      if (newArray[x][y + 1].id === 0) {
         newArray[x][y + 1].id = 2;
-      } else if (tileColumns[x][y + 1].id === 2) {
+      } else if (newArray[x][y + 1].id === 2) {
         newArray[x][y + 1].id = 0;
-      } else if (tileColumns[x][y + 1].id === 8) {
+      } else if (newArray[x][y + 1].id === 8) {
         newArray[x][y + 1].id = 3;
-      } else if (tileColumns[x][y + 1].id === 3) {
+      } else if (newArray[x][y + 1].id === 3) {
         newArray[x][y + 1].id = 8;
         }
-      if (tileColumns[x][y - 1].id === 0) {
+      if (newArray[x][y - 1].id === 0) {
         newArray[x][y - 1].id = 2;
-      } else if (tileColumns[x][y - 1].id === 2) {
+      } else if (newArray[x][y - 1].id === 2) {
         newArray[x][y - 1].id = 0;
-      } else if (tileColumns[x][y - 1].id === 8) {
+      } else if (newArray[x][y - 1].id === 8) {
         newArray[x][y - 1].id = 3;
-      } else if (tileColumns[x][y - 1].id === 3) {
+      } else if (newArray[x][y - 1].id === 3) {
         newArray[x][y - 1].id = 8;
         }
-    } else if (tileColumns[x][y].id === 2) {
+    }
+    if (newArray[x][y].id === 9) {
+      highlightTiles();
+    } else if (newArray[x][y].id === 2) {
       newArray.forEach((column, i) => {
         column.forEach((tile, j) => {
           if (newArray[i][j].id === 2) {
@@ -199,9 +212,20 @@ export default function TestLevel() {
       for (let i = 0; i < newArray.length; i++) {
         for (let j = 0; j < newArray[i].length; j++) {
           if (newArray[i][j].id === 9) {
-            newArray[x][y] = {...tileColumns[i][j]};
-            newArray[i][j].id = 0;
-            newArray[i][j].hp = 0;
+            if (newArray[x][y].status === 'water') {
+              newArray[i][j].hp += 2;
+              newArray[x][y] = {...newArray[i][j]};
+              newArray[i][j].id = 0;
+              newArray[i][j].hp = 0;
+              addMessage('Water! +2 HP')
+              addMessage('Keep moving!')
+              highlightTiles();
+
+            } else {
+              newArray[x][y] = {...newArray[i][j]};
+              newArray[i][j].id = 0;
+              newArray[i][j].hp = 0;
+            }
             break loop1;
           }
         }
