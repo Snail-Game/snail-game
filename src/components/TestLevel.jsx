@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback, useLayoutEffect } from "react";
-import { enemyMoves } from './enemyMoves1';
+import { enemyMoves } from '../utils/enemyMoves';
 import Messages from './Messages';
 import Avatar from './Avatar';
 
