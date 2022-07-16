@@ -1,20 +1,24 @@
-import { useEffect, useState, useRef, useCallback, useLayoutEffect } from "react";
-import { enemyMoves } from './EnemyMoves';
-import Messages from './Messages'
+import { useEffect, useState, useRef, useCallback, useLayoutEffect, useMemo } from "react";
+import { enemyMoves } from './enemyMoves';
+import Messages from './Messages';
+import Avatar from './Avatar';
 
 export default function TestLevel() {
   const messages = useRef(['Don\'t get eaten!', 'Find your way across!']);
   const canvasRef = useRef(null);
-  const padding = 2;
-  const [cellSize, setCellSize] = useState(64);
-  let canvasWidth = 8 * (cellSize + padding) - padding;
-  let canvasHeight = 8 * (cellSize + padding) - padding;
+  const health = useRef(10);
+  
   const wallColor = "#506F91";
   const spaceColor = "#A0DAB6";
   const moveColor = "#FFD700";
   const attackColor = "#bb0a1e";
+  const padding = 2;
   const strength = 3;
-  const enemyStrength = 4;
+  const enemyStrength = 3;
+
+  const [cellSize, setCellSize] = useState(64);
+  let canvasWidth = 8 * (cellSize + padding) - padding;
+  let canvasHeight = 8 * (cellSize + padding) - padding;
   const [tileColumns, setTileColumns] = useState([
     [{id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}, {id: 1, hp: 0}],
     [{id: 1, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 0, hp: 0}, {id: 1, hp: 0}],
@@ -30,102 +34,102 @@ export default function TestLevel() {
   const addMessage = (message) => {
     messages.current.push(message);
   }
-   
-  const draw = useCallback((ctx) => {
-    tileColumns.forEach((column, i) => {
-      column.forEach((tile, j) => {
-        if (tile.id === 1) {
-          ctx.fillStyle = wallColor;
-          ctx.fillRect(
-            i * (cellSize + padding),
-            j * (cellSize + padding),
-            cellSize,
-            cellSize
-          );
-        } else if (tile.id === 0) {
-          ctx.fillStyle = spaceColor;
-          ctx.fillRect(
-            i * (cellSize + padding),
-            j * (cellSize + padding),
-            cellSize,
-            cellSize
-          );
-        } else if (tile.id === 9) {
-          ctx.fillStyle = spaceColor;
-          ctx.fillRect(
-            i * (cellSize + padding),
-            j * (cellSize + padding),
-            cellSize,
-            cellSize
-          );
-          const player = new Image();
-          player.src = "/images/snail.png";
-          player.onload = function() {
-            ctx.drawImage(
-              player,
+  
+    const draw = useCallback((ctx) => {
+      tileColumns.forEach((column, i) => {
+        column.forEach((tile, j) => {
+          if (tile.id === 1) {
+            ctx.fillStyle = wallColor;
+            ctx.fillRect(
               i * (cellSize + padding),
               j * (cellSize + padding),
               cellSize,
               cellSize
             );
-          };
-        } else if (tile.id === 8) {
-          ctx.fillStyle = spaceColor;
-          ctx.fillRect(
-            i * (cellSize + padding),
-            j * (cellSize + padding),
-            cellSize,
-            cellSize
-          );
-          const enemy = new Image();
-          enemy.src = "/images/squirrel.png";
-          enemy.onload = function() {
-            ctx.drawImage(
-              enemy,
+          } else if (tile.id === 0) {
+            ctx.fillStyle = spaceColor;
+            ctx.fillRect(
               i * (cellSize + padding),
               j * (cellSize + padding),
               cellSize,
               cellSize
             );
-          };
-        } else if (tile.id === 3) {
-          ctx.fillStyle = spaceColor;
-          ctx.fillRect(
-            i * (cellSize + padding),
-            j * (cellSize + padding),
-            cellSize,
-            cellSize
-          );
-          const enemy = new Image();
-          enemy.src = "/images/squirrel.png";
-          enemy.onload = function() {
-            ctx.drawImage(
-              enemy,
+          } else if (tile.id === 9) {
+            ctx.fillStyle = spaceColor;
+            ctx.fillRect(
               i * (cellSize + padding),
               j * (cellSize + padding),
               cellSize,
               cellSize
             );
-          };
-          ctx.strokeStyle = attackColor;
-            ctx.lineWidth = 3;
-            ctx.strokeRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
-        } else if (tile.id === 2) {
-          ctx.fillStyle = spaceColor;
-          ctx.fillRect(
-            i * (cellSize + padding),
-            j * (cellSize + padding),
-            cellSize,
-            cellSize
-            )
-            ctx.strokeStyle = moveColor;
-            ctx.lineWidth = 3;
-            ctx.strokeRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
-        }
+            const player = new Image();
+            player.src = "/images/snail.png";
+            player.onload = function() {
+              ctx.drawImage(
+                player,
+                i * (cellSize + padding),
+                j * (cellSize + padding),
+                cellSize,
+                cellSize
+              );
+            };
+          } else if (tile.id === 8) {
+            ctx.fillStyle = spaceColor;
+            ctx.fillRect(
+              i * (cellSize + padding),
+              j * (cellSize + padding),
+              cellSize,
+              cellSize
+            );
+            const enemy = new Image();
+            enemy.src = "/images/squirrel.png";
+            enemy.onload = function() {
+              ctx.drawImage(
+                enemy,
+                i * (cellSize + padding),
+                j * (cellSize + padding),
+                cellSize,
+                cellSize
+              );
+            };
+          } else if (tile.id === 3) {
+            ctx.fillStyle = spaceColor;
+            ctx.fillRect(
+              i * (cellSize + padding),
+              j * (cellSize + padding),
+              cellSize,
+              cellSize
+            );
+            const enemy = new Image();
+            enemy.src = "/images/squirrel.png";
+            enemy.onload = function() {
+              ctx.drawImage(
+                enemy,
+                i * (cellSize + padding),
+                j * (cellSize + padding),
+                cellSize,
+                cellSize
+              );
+            };
+            ctx.strokeStyle = attackColor;
+              ctx.lineWidth = 3;
+              ctx.strokeRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
+          } else if (tile.id === 2) {
+            ctx.fillStyle = spaceColor;
+            ctx.fillRect(
+              i * (cellSize + padding),
+              j * (cellSize + padding),
+              cellSize,
+              cellSize
+              )
+              ctx.strokeStyle = moveColor;
+              ctx.lineWidth = 3;
+              ctx.strokeRect(i * (cellSize + padding), j * (cellSize + padding), cellSize, cellSize);
+          }
+        });
       });
-    });
-    return ctx;
-  }, [tileColumns, cellSize]);
+      return ctx;
+    }, [tileColumns, cellSize]);
 
   useLayoutEffect(() => {
     const canvas = canvasRef.current;
@@ -134,7 +138,7 @@ export default function TestLevel() {
     draw(ctx);
   }, [draw]);
   
-  useEffect(() => {                 // click-to-move logic
+  useEffect(() => {               // click-to-move logic
     const x = activeTile.x;
     const y = activeTile.y;
     let newArray = [];
@@ -247,6 +251,13 @@ export default function TestLevel() {
       // enemy moves
       newArray = enemyMoves(newArray, strength, enemyStrength, addMessage);
     }
+  newArray.forEach((column) => {
+    column.forEach((tile) => {
+      if (tile.id === 9) {
+        health.current = tile.hp;
+      }
+    })
+  })
   setTileColumns(newArray);
     // eslint-disable-next-line react-hooks/exhaustive-deps
 }, [activeTile])
@@ -307,6 +318,7 @@ export default function TestLevel() {
             <button onClick={boardSizeUp}>Increase board size</button>
             <button onClick={boardSizeDown}>Decrease board size</button>
         </div>
+        <Avatar health={health.current} />
       </div>
       <canvas
         onClick={(e) => handleCanvasClick(e)}

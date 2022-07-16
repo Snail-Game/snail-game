@@ -9,7 +9,8 @@ canvas {
   display: flex;
   flex-direction: column;
 }
-.mother {
+
+#app {
 background-color: black;
 color: white;
 }
@@ -61,4 +62,11 @@ label {
 #ui {
   display: flex;
   justify-content: center;
+}
+
+#avatar {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
