@@ -17,6 +17,7 @@ export default function TestLevel() {
   const strength = 3;
   const enemyStrength = 3;
 
+  const [enemyTurn, setEnemyTurn] = useState(false);
   const [cellSize, setCellSize] = useState(64);
   let canvasWidth = 8 * (cellSize + padding) - padding;
   let canvasHeight = 8 * (cellSize + padding) - padding;
@@ -142,12 +143,16 @@ export default function TestLevel() {
   }, [tileColumns, cellSize]);
 
   useLayoutEffect(() => {
+    if (enemyTurn) {
+      setTileColumns(enemyMoves(tileColumns, strength, enemyStrength, addMessage));
+      setEnemyTurn(false);
+    }
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     draw(ctx);
-  }, [draw]);
-  
+  }, [draw, enemyTurn, tileColumns]);
+
   useEffect(() => {               // click-to-move logic
     const x = activeTile.x;
     const y = activeTile.y;
@@ -167,7 +172,7 @@ export default function TestLevel() {
         newArray[x + 1][y].id = 3;
       } else if (newArray[x + 1][y].id === 3) {
         newArray[x + 1][y].id = 8;
-        }
+      }
       if (newArray[x - 1][y].id === 0) {
         newArray[x - 1][y].id = 2;
       } else if (newArray[x - 1][y].id === 2) {
@@ -176,7 +181,7 @@ export default function TestLevel() {
         newArray[x - 1][y].id = 3;
       } else if (newArray[x - 1][y].id === 3) {
         newArray[x - 1][y].id = 8;
-        }
+      }
       if (newArray[x][y + 1].id === 0) {
         newArray[x][y + 1].id = 2;
       } else if (newArray[x][y + 1].id === 2) {
@@ -185,7 +190,7 @@ export default function TestLevel() {
         newArray[x][y + 1].id = 3;
       } else if (newArray[x][y + 1].id === 3) {
         newArray[x][y + 1].id = 8;
-        }
+      }
       if (newArray[x][y - 1].id === 0) {
         newArray[x][y - 1].id = 2;
       } else if (newArray[x][y - 1].id === 2) {
@@ -194,11 +199,12 @@ export default function TestLevel() {
         newArray[x][y - 1].id = 3;
       } else if (newArray[x][y - 1].id === 3) {
         newArray[x][y - 1].id = 8;
-        }
+      }
     }
-    if (newArray[x][y].id === 9) {
+    if (newArray[x][y].id === 9) {      // select/deselect player
       highlightTiles();
-    } else if (newArray[x][y].id === 2) {
+    } else if (newArray[x][y].id === 2) {      // move to empty space
+      setEnemyTurn(true);
       newArray.forEach((column, i) => {
         column.forEach((tile, j) => {
           if (newArray[i][j].id === 2) {
@@ -217,10 +223,10 @@ export default function TestLevel() {
               newArray[x][y] = {...newArray[i][j]};
               newArray[i][j].id = 0;
               newArray[i][j].hp = 0;
-              addMessage('Water! +2 HP')
-              addMessage('Keep moving!')
+              addMessage('Water! +2 HP');
+              addMessage('Keep moving!');
               highlightTiles();
-
+              setEnemyTurn(false);
             } else {
               newArray[x][y] = {...newArray[i][j]};
               newArray[i][j].id = 0;
@@ -231,8 +237,8 @@ export default function TestLevel() {
         }
       }
       // enemy moves
-      newArray = enemyMoves(newArray, strength, enemyStrength, addMessage);
-    } else if (tileColumns[x][y].id === 3) {
+    } else if (tileColumns[x][y].id === 3) {     // attack enemy
+      setEnemyTurn(true);
       const attack = Math.ceil(Math.random() * strength);
       const enemyAttack = Math.ceil(Math.random() * enemyStrength);
       newArray[x][y].hp -= attack;
@@ -273,7 +279,6 @@ export default function TestLevel() {
         }
       }
       // enemy moves
-      newArray = enemyMoves(newArray, strength, enemyStrength, addMessage);
     }
   newArray.forEach((column) => {
     column.forEach((tile) => {
@@ -323,14 +328,6 @@ export default function TestLevel() {
   const debugTileColumns = () => {
     console.log(tileColumns);
   }
-  
-  const boardSizeUp = () => {
-    setCellSize(cellSize + 2);
-  }
-
-  const boardSizeDown = () => {
-    setCellSize(cellSize - 2);
-  }
 
   return (
     <div id="main">
@@ -339,8 +336,8 @@ export default function TestLevel() {
         <Messages messages={messages.current} />
         <div id={'buttons'}>
             <button onClick={debugTileColumns}>Debug tileColumns</button>
-            <button onClick={boardSizeUp}>Increase board size</button>
-            <button onClick={boardSizeDown}>Decrease board size</button>
+            <button onClick={() => setCellSize(cellSize + 2)}>Increase board size</button>
+            <button onClick={() => setCellSize(cellSize - 2)}>Decrease board size</button>
         </div>
         <Avatar health={health.current} />
       </div>
