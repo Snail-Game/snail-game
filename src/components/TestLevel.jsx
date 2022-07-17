@@ -17,7 +17,6 @@ export default function TestLevel() {
   const spikes = useRef(0);
 
   const moveColor = "#FFD700";
-  const attackColor = "#bb0a1e";
   const padding = 2;
   const strength = 3;
   const enemyStrength = 3;
