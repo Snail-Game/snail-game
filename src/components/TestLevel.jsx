@@ -129,6 +129,15 @@ export default function TestLevel() {
         const sprite = new Image();
         sprite.src = src;
         sprite.onload = function () {
+        if (src === "/assets/player/snail-0.png") {
+          ctx.drawImage(
+            sprite,
+            i * (cellSize + padding) + cellSize / 4,
+            j * (cellSize + padding) + cellSize / 4,
+            cellSize / 2,
+            cellSize / 2
+          );
+        } else {
           ctx.drawImage(
             sprite,
             i * (cellSize + padding),
@@ -137,6 +146,7 @@ export default function TestLevel() {
             cellSize
           );
         };
+      }
       }
       function renderTile(src, i, j) {
         const tile = new Image();
@@ -348,6 +358,14 @@ export default function TestLevel() {
     console.log(tileColumns);
   };
 
+  const handleScroll = (e) => {
+    if (e.nativeEvent.deltaY < 0) {
+      setCellSize(cellSize + 2);
+    } else {
+      setCellSize(cellSize - 2);
+    }
+  }
+
   return (
     <div id="main">
       <h1>Snail game test level</h1>
@@ -365,6 +383,7 @@ export default function TestLevel() {
         <Avatar health={health.current} durability={durability.current} spikes={spikes.current} />
       </div>
       <canvas
+        onWheel={(e) => handleScroll(e)}
         onClick={(e) => handleCanvasClick(e)}
         ref={canvasRef}
         id="canvas"
