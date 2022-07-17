@@ -128,6 +128,15 @@ export default function TestLevel() {
         const sprite = new Image();
         sprite.src = src;
         sprite.onload = function () {
+        if (src === "/assets/player/snail-0.png") {
+          ctx.drawImage(
+            sprite,
+            i * (cellSize + padding) + cellSize / 4,
+            j * (cellSize + padding) + cellSize / 4,
+            cellSize / 2,
+            cellSize / 2
+          );
+        } else {
           ctx.drawImage(
             sprite,
             i * (cellSize + padding),
@@ -136,6 +145,7 @@ export default function TestLevel() {
             cellSize
           );
         };
+      }
       }
       function renderTile(src, i, j) {
         const tile = new Image();
@@ -168,7 +178,7 @@ export default function TestLevel() {
             renderTile("/assets/tiles/wall.png", i, j);
           } else if (tile.status === "water") {
             renderTile("/assets/tiles/water.png", i, j);
-          } else {
+          } else if (tile.status === "none") {
             renderTile("/assets/tiles/grass.png", i, j);
           }
 
@@ -219,37 +229,21 @@ export default function TestLevel() {
         newArray[x + 1][y].id = 2;
       } else if (newArray[x + 1][y].id === 2) {
         newArray[x + 1][y].id = 0;
-      } else if (newArray[x + 1][y].id === 8) {
-        newArray[x + 1][y].id = 3;
-      } else if (newArray[x + 1][y].id === 3) {
-        newArray[x + 1][y].id = 8;
       }
       if (newArray[x - 1][y].id === 0) {
         newArray[x - 1][y].id = 2;
       } else if (newArray[x - 1][y].id === 2) {
         newArray[x - 1][y].id = 0;
-      } else if (newArray[x - 1][y].id === 8) {
-        newArray[x - 1][y].id = 3;
-      } else if (newArray[x - 1][y].id === 3) {
-        newArray[x - 1][y].id = 8;
       }
       if (newArray[x][y + 1].id === 0) {
         newArray[x][y + 1].id = 2;
       } else if (newArray[x][y + 1].id === 2) {
         newArray[x][y + 1].id = 0;
-      } else if (newArray[x][y + 1].id === 8) {
-        newArray[x][y + 1].id = 3;
-      } else if (newArray[x][y + 1].id === 3) {
-        newArray[x][y + 1].id = 8;
       }
       if (newArray[x][y - 1].id === 0) {
         newArray[x][y - 1].id = 2;
       } else if (newArray[x][y - 1].id === 2) {
         newArray[x][y - 1].id = 0;
-      } else if (newArray[x][y - 1].id === 8) {
-        newArray[x][y - 1].id = 3;
-      } else if (newArray[x][y - 1].id === 3) {
-        newArray[x][y - 1].id = 8;
       }
     };
     if (newArray[x][y].id === 9) {
@@ -388,6 +382,14 @@ export default function TestLevel() {
     console.log(tileColumns);
   };
 
+  const handleScroll = (e) => {
+    if (e.nativeEvent.deltaY < 0) {
+      setCellSize(cellSize + 2);
+    } else {
+      setCellSize(cellSize - 2);
+    }
+  }
+
   return (
     <div id="main">
       <h1>Snail game test level</h1>
@@ -405,6 +407,7 @@ export default function TestLevel() {
         <Avatar health={health.current} />
       </div>
       <canvas
+        onWheel={(e) => handleScroll(e)}
         onClick={(e) => handleCanvasClick(e)}
         ref={canvasRef}
         id="canvas"
