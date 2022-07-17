@@ -13,6 +13,7 @@ export default function TestLevel() {
   const messages = useRef(["Don't get eaten!", "Find your way across!"]);
   const canvasRef = useRef(null);
   const health = useRef(10);
+  const durability = useRef(0);
 
   const moveColor = "#FFD700";
   const attackColor = "#bb0a1e";
@@ -88,7 +89,7 @@ export default function TestLevel() {
     [
       { id: 1, hp: 0, status: "wall" },
       { id: 0, hp: 0, status: "none" },
-      { id: 0, hp: 0, status: "none" },
+      { id: 0, hp: 0, status: "junk" },
       { id: 0, hp: 0, status: "none" },
       { id: 0, hp: 0, status: "none" },
       { id: 0, hp: 0, status: "none" },
@@ -168,6 +169,8 @@ export default function TestLevel() {
             renderTile("/assets/tiles/wall.png", i, j);
           } else if (tile.status === "water") {
             renderTile("/assets/tiles/water.png", i, j);
+          } else if (tile.status === "junk") {
+            renderTile("/assets/tiles/junk.png", i, j)
           } else {
             renderTile("/assets/tiles/grass.png", i, j);
           }
@@ -193,7 +196,7 @@ export default function TestLevel() {
   useLayoutEffect(() => {
     if (enemyTurn) {
       setTileColumns(
-        enemyMoves(tileColumns, strength, enemyStrength, addMessage)
+        enemyMoves(tileColumns, strength, enemyStrength, addMessage, durability, health)
       );
       setEnemyTurn(false);
     }
@@ -279,7 +282,15 @@ export default function TestLevel() {
               addMessage("Keep moving!");
               highlightTiles();
               setEnemyTurn(false);
-            } else {
+            } else if (newArray[x][y].status === "junk") {
+              newArray[i][j].hp += 1;
+              newArray[x][y] = { ...newArray[i][j] };
+              newArray[i][j].id = 0;
+              newArray[i][j].hp = 0;
+              addMessage("You absorbed some metal and added it to your shell!");
+              addMessage("Durability increased!");
+              durability.current += 1;
+             } else {
               newArray[x][y] = { ...newArray[i][j] };
               newArray[i][j].id = 0;
               newArray[i][j].hp = 0;
@@ -402,7 +413,7 @@ export default function TestLevel() {
             Decrease board size
           </button>
         </div>
-        <Avatar health={health.current} />
+        <Avatar health={health.current} durability={durability.current} />
       </div>
       <canvas
         onClick={(e) => handleCanvasClick(e)}
