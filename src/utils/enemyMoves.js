@@ -1,4 +1,4 @@
-export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
+export function enemyMoves(newArray, strength, enemyStrength, addMessage, durability, health) {
   let playerX = 0;
   let playerY = 0;
   newArray.forEach((column, i) => {
@@ -150,6 +150,13 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
         } else if (random === 4) {
           moveLeft();
         }
+        newArray2.forEach((column) => {
+          column.forEach((tile) => {
+            if (tile.id === 9) {
+              health.current = tile.hp;
+            }
+          });
+        });
         newArray2.forEach((column, i) => {
           column.forEach((tile, j) => {
             newArray[i][j] = {...tile};
