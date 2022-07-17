@@ -13,9 +13,10 @@ export default function TestLevel() {
   const messages = useRef(["Don't get eaten!", "Find your way across!"]);
   const canvasRef = useRef(null);
   const health = useRef(10);
+  const durability = useRef(0);
+  const spikes = useRef(0);
 
   const moveColor = "#FFD700";
-  const attackColor = "#bb0a1e";
   const padding = 2;
   const strength = 3;
   const enemyStrength = 3;
@@ -60,7 +61,7 @@ export default function TestLevel() {
       { id: 0, hp: 0, status: "none" },
       { id: 8, hp: 3, status: "none" },
       { id: 0, hp: 0, status: "none" },
-      { id: 0, hp: 0, status: "none" },
+      { id: 0, hp: 0, status: "junk" },
       { id: 0, hp: 0, status: "none" },
       { id: 0, hp: 0, status: "none" },
       { id: 1, hp: 0, status: "wall" },
@@ -88,10 +89,10 @@ export default function TestLevel() {
     [
       { id: 1, hp: 0, status: "wall" },
       { id: 0, hp: 0, status: "none" },
+      { id: 0, hp: 0, status: "junk" },
       { id: 0, hp: 0, status: "none" },
       { id: 0, hp: 0, status: "none" },
-      { id: 0, hp: 0, status: "none" },
-      { id: 0, hp: 0, status: "none" },
+      { id: 0, hp: 0, status: "junk" },
       { id: 0, hp: 0, status: "none" },
       { id: 1, hp: 0, status: "wall" },
     ],
@@ -178,7 +179,9 @@ export default function TestLevel() {
             renderTile("/assets/tiles/wall.png", i, j);
           } else if (tile.status === "water") {
             renderTile("/assets/tiles/water.png", i, j);
-          } else if (tile.status === "none") {
+          } else if (tile.status === "junk") {
+            renderTile("/assets/tiles/junk.png", i, j)
+          } else {
             renderTile("/assets/tiles/grass.png", i, j);
           }
 
@@ -187,9 +190,6 @@ export default function TestLevel() {
             renderSprite("/assets/player/snail-0.png", i, j);
           } else if (tile.id === 8) {
             renderSprite("/assets/enemies/squirrel-0.png", i, j);
-          } else if (tile.id === 3) {
-            renderSprite("/assets/enemies/squirrel-0.png", i, j);
-            highlightTile(attackColor, i, j);
           } else if (tile.id === 2) {
             highlightTile(moveColor, i, j);
           }
@@ -203,7 +203,7 @@ export default function TestLevel() {
   useLayoutEffect(() => {
     if (enemyTurn) {
       setTileColumns(
-        enemyMoves(tileColumns, strength, enemyStrength, addMessage)
+        enemyMoves(tileColumns, strength, enemyStrength, addMessage, durability, health, spikes)
       );
       setEnemyTurn(false);
     }
@@ -256,8 +256,6 @@ export default function TestLevel() {
         column.forEach((tile, j) => {
           if (newArray[i][j].id === 2) {
             newArray[i][j].id = 0;
-          } else if (newArray[i][j].id === 3) {
-            newArray[i][j].id = 8;
           }
         });
       });
@@ -273,54 +271,32 @@ export default function TestLevel() {
               addMessage("Keep moving!");
               highlightTiles();
               setEnemyTurn(false);
-            } else {
+            } else if (newArray[x][y].status === "junk") {
+              if (durability.current === 0) {
+                newArray[i][j].hp += 1;
+                newArray[x][y] = { ...newArray[i][j] };
+                newArray[i][j].id = 0;
+                newArray[i][j].hp = 0;
+                addMessage("You absorbed some metal and added it to your shell!");
+                addMessage("Durability increased!");
+                durability.current += 1;
+                const spikesDiv = document.getElementById('spikes');
+                spikesDiv.style.display = 'block';
+              } else if (durability.current === 1) {
+                newArray[i][j].hp += 1;
+                newArray[x][y] = { ...newArray[i][j] };
+                newArray[i][j].id = 0;
+                newArray[i][j].hp = 0;
+                addMessage("You absorbed some metal and added it to your shell!");
+                addMessage("Your shell is spiky!");
+                spikes.current += 1;
+              }
+             } else {
               newArray[x][y] = { ...newArray[i][j] };
               newArray[i][j].id = 0;
               newArray[i][j].hp = 0;
             }
             break loop1;
-          }
-        }
-      }
-      // enemy moves
-    } else if (tileColumns[x][y].id === 3) {
-      // attack enemy
-      setEnemyTurn(true);
-      const attack = Math.ceil(Math.random() * strength);
-      const enemyAttack = Math.ceil(Math.random() * enemyStrength);
-      newArray[x][y].hp -= attack;
-      // draw damage animation here
-      addMessage("You attack enemy for " + attack + " damage!");
-      addMessage("You take " + enemyAttack + " damage!");
-      if (newArray[x][y].hp <= 0) {
-        newArray[x][y].id = 0;
-        newArray[x][y].hp = 0;
-        addMessage("Enemy destroyed!");
-      }
-      for (let i = 0; i < newArray.length; i++) {
-        for (let j = 0; j < newArray[i].length; j++) {
-          if (newArray[i][j].id === 2) {
-            newArray[i][j].id = 0;
-          } else if (newArray[i][j].id === 3) {
-            newArray[i][j].id = 8;
-          }
-        }
-      }
-      loop1: for (let i = 0; i < newArray.length; i++) {
-        for (let j = 0; j < newArray[i].length; j++) {
-          if (newArray[i][j].id === 9) {
-            newArray[i][j].hp -= enemyAttack;
-            if (newArray[i][j].hp <= 0) {
-              newArray[i][j].id = 0;
-              newArray[i][j].hp = 0;
-              addMessage("GAME OVER");
-              // game over screen here
-            } else if (newArray[x][y].id === 0 && newArray[x][y].hp === 0) {
-              newArray[x][y] = { ...newArray[i][j] };
-              newArray[i][j].id = 0;
-              newArray[i][j].hp = 0;
-              break loop1;
-            }
           }
         }
       }
@@ -404,7 +380,7 @@ export default function TestLevel() {
             Decrease board size
           </button>
         </div>
-        <Avatar health={health.current} />
+        <Avatar health={health.current} durability={durability.current} spikes={spikes.current} />
       </div>
       <canvas
         onWheel={(e) => handleScroll(e)}
