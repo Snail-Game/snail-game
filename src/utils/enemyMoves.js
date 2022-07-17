@@ -14,7 +14,7 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
     column.forEach((tile, j) => {
       if (tile.id === 8) {
         const random = Math.floor(Math.random() * 4 + 1);
-        const randomChase = Math.floor(Math.random() * 4 + 1);
+        const randomChase = Math.floor(Math.random() * 10 + 1);
         let newArray2 = [];
         newArray.forEach((column, i) => {
           newArray2[i] = [];
@@ -124,21 +124,21 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
 
         // pursue player
         if (Math.abs(playerX - i) <= 2 && Math.abs(playerY - j <= 2)) {
-          if (playerX - i > 0 && randomChase > 2) {
+          if (playerX - i > 0 && randomChase > 6) {
             moveRight();
-          } else if (playerX - i < 0 && randomChase > 2) {
+          } else if (playerX - i < 0 && randomChase > 6) {
             moveLeft();
-          } else if (playerY - j > 0 && randomChase < 2) {
+          } else if (playerY - j > 0 && randomChase < 5) {
             moveDown();
-          } else if (playerY - j < 0 && randomChase < 2) {
+          } else if (playerY - j < 0 && randomChase < 5) {
             moveUp();
-          } else if (playerX - i === 0 && playerY - j > 0 && randomChase < 2) {
+          } else if (playerX - i === 0 && playerY - j > 0 && randomChase < 5) {
             moveDown();
-          } else if (playerX - i === 0 && playerY - j < 0 && randomChase < 2) {
+          } else if (playerX - i === 0 && playerY - j < 0 && randomChase < 5) {
             moveUp();
-          } else if (playerY - j === 0 && playerX - i > 0 && randomChase < 2) {
+          } else if (playerY - j === 0 && playerX - i > 0 && randomChase > 6) {
             moveRight();
-          } else if (playerY - j === 0 && playerX - i < 0 && randomChase < 2) {
+          } else if (playerY - j === 0 && playerX - i < 0 && randomChase > 6) {
             moveLeft();
           }
         } else if (random === 1) {       // move at random
