@@ -70,3 +70,7 @@ label {
   flex-direction: column;
   align-items: center;
 }
+
+#spikes {
+  display: none;
+}

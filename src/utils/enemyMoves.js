@@ -1,4 +1,4 @@
-export function enemyMoves(newArray, strength, enemyStrength, addMessage, durability, health) {
+export function enemyMoves(newArray, strength, enemyStrength, addMessage, durability, health, spikes) {
   let playerX = 0;
   let playerY = 0;
   newArray.forEach((column, i) => {
@@ -28,13 +28,12 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage, durabi
             newArray2[i][j].id = 0;
             newArray2[i][j].hp = 0;
           } else if (newArray[i + 1][j].id === 9) {
-            const attack = Math.ceil(Math.random() * strength);
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
             newArray2[i + 1][j].hp -= enemyAttack;
-            newArray2[i][j].hp -= attack;
+            newArray2[i][j].hp -= spikes.current;
             // draw damage animation here
             addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
-            addMessage('Enemy takes ' + attack + ' damage!');
+            addMessage('Enemy takes ' + spikes.current + ' damage!');
             if (newArray2[i + 1][j].hp <= 0) {
               newArray2[i + 1][j].id = 0;
               newArray2[i + 1][j].hp = 0;
@@ -53,13 +52,12 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage, durabi
             newArray2[i][j].id = 0;
             newArray2[i][j].hp = 0;
           } else if (newArray[i][j - 1].id === 9) {
-            const attack = Math.ceil(Math.random() * strength);
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
             newArray2[i][j - 1].hp -= enemyAttack;
-            newArray2[i][j].hp -= attack;
+            newArray2[i][j].hp -= spikes.current;
             // draw damage animation here
             addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
-            addMessage('Enemy takes ' + attack + ' damage!');
+            addMessage('Enemy takes ' + spikes.current + ' damage!');
             if (newArray2[i][j - 1].hp <= 0) {
               newArray2[i][j - 1].id = 0;
               newArray2[i][j - 1].hp = 0;
@@ -77,13 +75,12 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage, durabi
             newArray2[i][j].id = 0;
             newArray2[i][j].hp = 0;
           } else if (newArray[i][j + 1].id === 9) {
-            const attack = Math.ceil(Math.random() * strength);
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
             newArray2[i][j + 1].hp -= enemyAttack;
-            newArray2[i][j].hp -= attack;
+            newArray2[i][j].hp -= spikes.current;
             // draw damage animation here
             addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
-            addMessage('Enemy takes ' + attack + ' damage!');
+            addMessage('Enemy takes ' + spikes.current + ' damage!');
             if (newArray2[i][j + 1].hp <= 0) {
               newArray2[i][j + 1].id = 0;
               newArray2[i][j + 1].hp = 0;
@@ -102,13 +99,12 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage, durabi
             newArray2[i][j].id = 0;
             newArray2[i][j].hp = 0;
           } else if (newArray[i - 1][j].id === 9) {
-            const attack = Math.ceil(Math.random() * strength);
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
             newArray2[i - 1][j].hp -= enemyAttack;
-            newArray2[i][j].hp -= attack;
+            newArray2[i][j].hp -= spikes.current;
             // draw damage animation here
             addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
-            addMessage('Enemy takes ' + attack + ' damage!');
+            addMessage('Enemy takes ' + spikes.current + ' damage!');
             if (newArray2[i - 1][j].hp <= 0) {
               newArray2[i - 1][j].id = 0;
               newArray2[i - 1][j].hp = 0;
