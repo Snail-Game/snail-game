@@ -1,4 +1,4 @@
-export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
+export function enemyMoves(newArray, strength, enemyStrength, addMessage, durability, health) {
   newArray.forEach((column, i) => {
     column.forEach((tile, j) => {
       if (tile.id === 8) {
@@ -17,7 +17,7 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
             newArray2[i][j].hp = 0;
           } else if (newArray[i][j - 1].id === 9) {
             const attack = Math.ceil(Math.random() * strength);
-            const enemyAttack = Math.ceil(Math.random() * enemyStrength);
+            const enemyAttack = (Math.ceil(Math.random() * enemyStrength) - durability.current) > 0 ? (Math.ceil(Math.random() * enemyStrength) - durability.current) : 0;
             newArray2[i][j - 1].hp -= enemyAttack;
             newArray2[i][j].hp -= attack;
             // draw damage animation here
@@ -107,6 +107,13 @@ export function enemyMoves(newArray, strength, enemyStrength, addMessage) {
             }
           }
         }
+        newArray2.forEach((column) => {
+          column.forEach((tile) => {
+            if (tile.id === 9) {
+              health.current = tile.hp;
+            }
+          });
+        });
         newArray2.forEach((column, i) => {
           column.forEach((tile, j) => {
             newArray[i][j] = {...tile};
