@@ -11,7 +11,8 @@ import Avatar from "./Avatar";
 
 export default function TestLevel() {
   const messages = useRef(["Don't get eaten!", "Find your way across!"]);
-  const canvasRef = useRef(null);
+  const levelLayer = useRef(null);
+  const entityLayer = useRef(null);
   const health = useRef(10);
 
   const moveColor = "#FFD700";
@@ -122,14 +123,14 @@ export default function TestLevel() {
     messages.current.push(message);
   };
 
-  const draw = useCallback(
+  const drawLevel = useCallback(
     (ctx) => {
-      function renderSprite(src, i, j) {
-        const sprite = new Image();
-        sprite.src = src;
-        sprite.onload = function () {
+      function renderTile(src, i, j) {
+        const tile = new Image();
+        tile.src = src;
+        tile.onload = function () {
           ctx.drawImage(
-            sprite,
+            tile,
             i * (cellSize + padding),
             j * (cellSize + padding),
             cellSize,
@@ -137,12 +138,32 @@ export default function TestLevel() {
           );
         };
       }
-      function renderTile(src, i, j) {
-        const tile = new Image();
-        tile.src = src;
-        tile.onload = function () {
+
+      tileColumns.forEach((column, i) => {
+        column.forEach((tile, j) => {
+          // render tiles
+          if (tile.status === "wall") {
+            renderTile("/assets/tiles/wall.png", i, j);
+          } else if (tile.status === "water") {
+            renderTile("/assets/tiles/water.png", i, j);
+          } else {
+            renderTile("/assets/tiles/grass.png", i, j);
+          }
+        });
+      });
+      return ctx;
+    },
+    [tileColumns, cellSize]
+  );
+
+  const drawEntities = useCallback(
+    (ctx) => {
+      function renderSprite(src, i, j) {
+        const sprite = new Image();
+        sprite.src = src;
+        sprite.onload = function () {
           ctx.drawImage(
-            tile,
+            sprite,
             i * (cellSize + padding),
             j * (cellSize + padding),
             cellSize,
@@ -163,15 +184,6 @@ export default function TestLevel() {
 
       tileColumns.forEach((column, i) => {
         column.forEach((tile, j) => {
-          // render tiles
-          if (tile.status === "wall") {
-            renderTile("/assets/tiles/wall.png", i, j);
-          } else if (tile.status === "water") {
-            renderTile("/assets/tiles/water.png", i, j);
-          } else {
-            renderTile("/assets/tiles/grass.png", i, j);
-          }
-
           // render sprites, handle logic
           if (tile.id === 9) {
             renderSprite("/assets/player/snail-0.png", i, j);
@@ -190,6 +202,13 @@ export default function TestLevel() {
     [tileColumns, cellSize]
   );
 
+  useEffect(() => {
+    const level = levelLayer.current;
+    const ctx = level.getContext("2d");
+    ctx.clearRect(0, 0, level.width, level.height);
+    drawLevel(ctx);
+  });
+
   useLayoutEffect(() => {
     if (enemyTurn) {
       setTileColumns(
@@ -197,11 +216,11 @@ export default function TestLevel() {
       );
       setEnemyTurn(false);
     }
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    draw(ctx);
-  }, [draw, enemyTurn, tileColumns]);
+    const entities = entityLayer.current;
+    const ctx = entities.getContext("2d");
+    ctx.clearRect(0, 0, entities.width, entities.height);
+    drawEntities(ctx);
+  }, [drawEntities, enemyTurn, tileColumns]);
 
   useEffect(() => {
     // click-to-move logic
@@ -340,7 +359,6 @@ export default function TestLevel() {
       });
     });
     setTileColumns(newArray);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTile]);
 
   const handleCanvasClick = (e) => {
@@ -352,14 +370,14 @@ export default function TestLevel() {
       Math.floor(
         // prevents rare crash from -1
         (mouseCoordinates.x -
-          canvasRef.current.offsetLeft +
+          entityLayer.current.offsetLeft +
           window.scrollX -
           6) /
           (cellSize + padding)
       ) >= 0 &&
       Math.floor(
         (mouseCoordinates.y -
-          canvasRef.current.offsetTop +
+          entityLayer.current.offsetTop +
           window.scrollY -
           6) /
           (cellSize + padding)
@@ -368,14 +386,14 @@ export default function TestLevel() {
       setActiveTile({
         x: Math.floor(
           (mouseCoordinates.x -
-            canvasRef.current.offsetLeft +
+            entityLayer.current.offsetLeft +
             window.scrollX -
             6) / // -8 from the canvas border, +2 from? not padding
             (cellSize + padding)
         ),
         y: Math.floor(
           (mouseCoordinates.y -
-            canvasRef.current.offsetTop +
+            entityLayer.current.offsetTop +
             window.scrollY -
             6) /
             (cellSize + padding)
@@ -406,10 +424,24 @@ export default function TestLevel() {
       </div>
       <canvas
         onClick={(e) => handleCanvasClick(e)}
-        ref={canvasRef}
-        id="canvas"
+        ref={levelLayer}
+        id="level"
         width={`${canvasWidth}`}
         height={`${canvasHeight}`}
+        style={{ position: "absolute", top: "25%", zIndex: 0 }}
+      ></canvas>
+      <canvas
+        onClick={(e) => handleCanvasClick(e)}
+        ref={entityLayer}
+        id="entities"
+        width={`${canvasWidth}`}
+        height={`${canvasHeight}`}
+        style={{
+          position: "absolute",
+          top: "25%",
+          zIndex: 1,
+          background: "transparent",
+        }}
       ></canvas>
     </div>
   );
