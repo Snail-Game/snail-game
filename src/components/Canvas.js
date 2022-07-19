@@ -5,8 +5,7 @@ import { useEffect,
   useLayoutEffect
 } from "react";
 import { enemyMoves } from "../utils/enemyMoves";
-import Messages from "./Messages";
-import Avatar from "./Avatar";
+import { getLevel, saveLevel } from '../utils/fetch-utils';
 
 export default function Canvas() {
   const messages = useRef(["Don't get eaten!", "Find your way across!"]);
@@ -21,17 +20,17 @@ export default function Canvas() {
 
   const [enemyTurn, setEnemyTurn] = useState(false);
   const [cellSize, setCellSize] = useState(48);
+  /* 
+    IDs for tiles: 
+      0 = floor
+      1 = wall
+      2 = available to move, highlighted tile
+      3 = enemy highlighted to attack
+      8 = enemy
+      9 = player
+      4-7 ... unused
+  */
   const [tileColumns, setTileColumns] = useState([
-    /* 
-      IDs for tiles: 
-        0 = floor
-        1 = wall
-        2 = available to move, highlighted tile
-        3 = enemy highlighted to attack
-        8 = enemy
-        9 = player
-        4-7 ... unused
-    */
         [
           { id: 1, hp: 0, status: "wall" },
           { id: 1, hp: 0, status: "wall" },
@@ -114,6 +113,8 @@ export default function Canvas() {
         ],
       ]);
   
+  const [saveInput, setSaveInput] = useState('');
+  const [getInput, setGetInput] = useState('');
   const [canvasWidth, setCanvasWidth] = useState(8 * (cellSize + padding) - padding);
   const [canvasHeight, setCanvasHeight] = useState(8 * (cellSize + padding) - padding);
   const [numRows, setNumRows] = useState(8);
@@ -359,6 +360,26 @@ export default function Canvas() {
     });
   };
 
+  const handleSaveLevel = async (e) => {
+    e.preventDefault();
+     await saveLevel(saveInput, tileColumns);
+    }
+  const handleGetLevel = async (e) => {
+    e.preventDefault();
+    const rawData = await getLevel(getInput);
+    let newArray = [];
+    rawData.forEach((column, i) => {
+      let newCol = [];
+      column.forEach((tile, j) => {
+        newCol[j] = {...JSON.parse(tile)}
+      })
+      newArray[i] = [...newCol];
+    })
+    setNumRows(newArray[0].length + 1);   // hacky way to trigger a new draw but seems ok
+    setNumColumns(newArray.length + 1);
+    setTileColumns(newArray);
+    }
+
   return (
     <div id="main">
       <h1>Snail game map editor</h1>
@@ -369,6 +390,16 @@ export default function Canvas() {
           value={cellSize}
           onChange={(e) => handleCellChange(e)}
         ></input>
+      </form>
+      <form onSubmit={handleSaveLevel}>
+        <label>Level name:</label>
+        <input value={saveInput} onChange={(e) => setSaveInput(e.target.value)}></input>
+        <button>Save level</button>
+      </form>
+      <form onSubmit={handleGetLevel}>
+        <label>Level name:</label>
+        <input value={getInput} onChange={(e) => setGetInput(e.target.value)}></input>
+        <button>Get level</button>
       </form>
       <button onClick={() => console.log(tileColumns)}>Debug tileColumns</button>
       <div id="button-div">
