@@ -10,7 +10,7 @@ import Messages from "./Messages";
 import Avatar from "./Avatar";
 
 export default function TestLevel() {
-  const messages = useRef(["Don't get eaten!", "Find your way across!"]);
+  const messages = useRef(["Don't get eaten!", "Find your way across!", "(click to move)"]);
   const canvasRef = useRef(null);
   const health = useRef(10);
   const durability = useRef(0);
@@ -354,7 +354,7 @@ export default function TestLevel() {
   };
 
   const debugTileColumns = () => {
-    console.log(tileColumns);
+    // console.log(tileColumns);
   };
 
   const handleScroll = (e) => {

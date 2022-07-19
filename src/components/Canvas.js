@@ -206,9 +206,9 @@ export default function Canvas() {
       setCanvasHeight(numRows * (cellSize + padding) - padding);
       let newColumn = [];
       for (let i = 0; i < numRows; i++) {
-        newColumn = [...newColumn, {...tileColumns[0][0]}]; //
+        newColumn = [...newColumn, {...tileColumns[0][0]}];
       }
-      setTileColumns([...tileColumns, newColumn]);  //
+      setTileColumns([...tileColumns, newColumn]);
     } else if (tileColumns[0].length < numRows) {   // adding a row
       setCanvasWidth(numColumns * (cellSize + padding) - padding);
       setCanvasHeight(numRows * (cellSize + padding) - padding);
@@ -218,10 +218,10 @@ export default function Canvas() {
         column.forEach((tile, j) => {
           newCol[j] = {...tile};
         })
-        newArray[i] = newCol;   //
+        newArray[i] = newCol;
       })
       for (let i = 0; i < newArray.length; i++) {
-        newArray[i] = [...newArray[i], {...tileColumns[0][0]}];  //
+        newArray[i] = [...newArray[i], {...tileColumns[0][0]}];
       }
       setTileColumns(newArray);
     } else if (tileColumns.length > numColumns) {   // delete last column

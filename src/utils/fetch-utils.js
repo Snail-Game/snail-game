@@ -6,8 +6,7 @@ const supabaseKey = process.env.REACT_APP_SUPABASE_KEY;
 export const supabase = createClient(supabaseUrl, supabaseKey);
 
 export async function getLevel(level) {
-  const { data, error } = await supabase.from('Levels').select('tileColumns[]').match({Name: level});
-  // console.log(JSON.parse(data[0].tileColumns[0][0]).id);
+  const { data } = await supabase.from('Levels').select('tileColumns[]').match({Name: level});
   return data[0].tileColumns;
 }
 
