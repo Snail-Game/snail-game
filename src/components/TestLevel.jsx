@@ -18,7 +18,6 @@ export default function TestLevel() {
 
   const moveColor = "#FFD700";
   const padding = 2;
-  const strength = 3;
   const enemyStrength = 3;
 
   const [enemyTurn, setEnemyTurn] = useState(false);
@@ -203,7 +202,7 @@ export default function TestLevel() {
   useLayoutEffect(() => {
     if (enemyTurn) {
       setTileColumns(
-        enemyMoves(tileColumns, strength, enemyStrength, addMessage, durability, health, spikes)
+        enemyMoves(tileColumns, enemyStrength, addMessage, durability, health, spikes)
       );
       setEnemyTurn(false);
     }

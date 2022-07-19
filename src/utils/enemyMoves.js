@@ -1,4 +1,4 @@
-export function enemyMoves(newArray, strength, enemyStrength, addMessage, durability, health, spikes) {
+export function enemyMoves(newArray, enemyStrength, addMessage, durability, health, spikes) {
   let playerX = 0;
   let playerY = 0;
   newArray.forEach((column, i) => {
