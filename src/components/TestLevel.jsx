@@ -3,7 +3,6 @@ import {
   useState,
   useRef,
   useCallback,
-  useLayoutEffect,
 } from "react";
 import { enemyMoves } from "../utils/enemyMoves";
 import Messages from "./Messages";
@@ -126,20 +125,18 @@ export default function TestLevel() {
     messages.current.push(message);
   };
 
-  const draw = useCallback(
-    (ctx) => {
+
+  useEffect(() => {
+    if (enemyTurn) {
+      setTileColumns(
+        enemyMoves(tileColumns, enemyStrength, addMessage, durability, health, spikes, shell, setShell)
+      );
+      setEnemyTurn(false);
+    }
+    const draw = () => {
       function renderSprite(src, i, j) {
         const sprite = new Image();
         sprite.src = src;
-        function drawChar() {
-          ctx.drawImage(
-            sprite,
-            i * (cellSize + padding) + cellSize / 4,
-            j * (cellSize + padding) + cellSize / 4,
-            cellSize / 2,
-            cellSize / 2
-          )
-        }
         sprite.onload = function () {
         if (src === "/assets/player/snail-0.png" || src === "/assets/player/shell.png") {
             ctx.drawImage(
@@ -183,6 +180,9 @@ export default function TestLevel() {
           cellSize
         );
       }
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");  
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       tileColumns.forEach((column, i) => {
         column.forEach((tile, j) => {
@@ -209,23 +209,10 @@ export default function TestLevel() {
           }
         });
       });
-      return ctx;
-    },
-    [tileColumns, cellSize, shell]
-  );
-
-  useEffect(() => {
-    if (enemyTurn) {
-      setTileColumns(
-        enemyMoves(tileColumns, enemyStrength, addMessage, durability, health, spikes, shell, setShell)
-      );
-      setEnemyTurn(false);
     }
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    draw(ctx);
-  }, [draw, enemyTurn, tileColumns, shell]);
+
+    draw();
+  }, [enemyTurn, tileColumns, shell, shadowCtx, canvasWidth, canvasHeight, cellSize]);
 
   const handleCanvasClick = (e) => {
     const mouseCoordinates = {
