@@ -388,7 +388,7 @@ export default function Canvas() {
         <input
           type={"number"}
           value={cellSize}
-          onChange={(e) => handleCellChange(e)}
+          onChange={handleCellChange}
         ></input>
       </form>
       <form onSubmit={handleSaveLevel}>
@@ -413,7 +413,7 @@ export default function Canvas() {
         <button onClick={() => setNumRows(numRows - 1)}>Delete row</button>
       </div>
       <canvas
-        onClick={(e) => handleCanvasClick(e)}
+        onClick={handleCanvasClick}
         ref={canvasRef}
         id="canvas"
         width={`${canvasWidth}`}

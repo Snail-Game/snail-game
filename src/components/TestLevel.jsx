@@ -19,9 +19,13 @@ export default function TestLevel() {
   const moveColor = "#FFD700";
   const padding = 2;
   const enemyStrength = 3;
-
+  const shadowCanvas = document.createElement('canvas');
+  const shadowCtx = shadowCanvas.getContext('2d');
+  
+  
+  const [shell, setShell] = useState(false);
   const [enemyTurn, setEnemyTurn] = useState(false);
-  const [cellSize, setCellSize] = useState(48);
+  const [cellSize, setCellSize] = useState(60);
   let canvasWidth = 8 * (cellSize + padding) - padding;
   let canvasHeight = 8 * (cellSize + padding) - padding;
   const [tileColumns, setTileColumns] = useState([
@@ -116,7 +120,7 @@ export default function TestLevel() {
       { id: 1, hp: 0, status: "wall" },
     ],
   ]);
-  const [activeTile, setActiveTile] = useState({ x: 0, y: 0 });
+  let activeTile = { x: 0, y: 0 };
 
   const addMessage = (message) => {
     messages.current.push(message);
@@ -127,23 +131,32 @@ export default function TestLevel() {
       function renderSprite(src, i, j) {
         const sprite = new Image();
         sprite.src = src;
-        sprite.onload = function () {
-        if (src === "/assets/player/snail-0.png") {
+        function drawChar() {
           ctx.drawImage(
             sprite,
             i * (cellSize + padding) + cellSize / 4,
             j * (cellSize + padding) + cellSize / 4,
             cellSize / 2,
             cellSize / 2
-          );
+          )
+        }
+        sprite.onload = function () {
+        if (src === "/assets/player/snail-0.png" || src === "/assets/player/shell.png") {
+            ctx.drawImage(
+              sprite,
+              i * (cellSize + padding) + cellSize / 4,
+              j * (cellSize + padding) + cellSize / 4,
+              cellSize / 2,
+              cellSize / 2
+            );
         } else {
-          ctx.drawImage(
-            sprite,
-            i * (cellSize + padding),
-            j * (cellSize + padding),
-            cellSize,
-            cellSize
-          );
+            ctx.drawImage(
+              sprite,
+              i * (cellSize + padding),
+              j * (cellSize + padding),
+              cellSize,
+              cellSize
+            )
         };
       }
       }
@@ -185,8 +198,10 @@ export default function TestLevel() {
           }
 
           // render sprites, handle logic
-          if (tile.id === 9) {
+          if (tile.id === 9 && !shell) {
             renderSprite("/assets/player/snail-0.png", i, j);
+          } else if (tile.id === 9 && shell) {
+            renderSprite("/assets/player/shell.png", i, j);
           } else if (tile.id === 8) {
             renderSprite("/assets/enemies/squirrel-0.png", i, j);
           } else if (tile.id === 2) {
@@ -196,13 +211,13 @@ export default function TestLevel() {
       });
       return ctx;
     },
-    [tileColumns, cellSize]
+    [tileColumns, cellSize, shell]
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (enemyTurn) {
       setTileColumns(
-        enemyMoves(tileColumns, enemyStrength, addMessage, durability, health, spikes)
+        enemyMoves(tileColumns, enemyStrength, addMessage, durability, health, spikes, shell, setShell)
       );
       setEnemyTurn(false);
     }
@@ -210,107 +225,7 @@ export default function TestLevel() {
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     draw(ctx);
-  }, [draw, enemyTurn, tileColumns]);
-
-  useEffect(() => {
-    // click-to-move logic
-    const x = activeTile.x;
-    const y = activeTile.y;
-    let newArray = [];
-    tileColumns.forEach((column, i) => {
-      newArray[i] = [];
-      column.forEach((tile, j) => {
-        newArray[i][j] = { ...tileColumns[i][j] };
-      });
-    });
-    const highlightTiles = () => {
-      if (newArray[x + 1][y].id === 0) {
-        newArray[x + 1][y].id = 2;
-      } else if (newArray[x + 1][y].id === 2) {
-        newArray[x + 1][y].id = 0;
-      }
-      if (newArray[x - 1][y].id === 0) {
-        newArray[x - 1][y].id = 2;
-      } else if (newArray[x - 1][y].id === 2) {
-        newArray[x - 1][y].id = 0;
-      }
-      if (newArray[x][y + 1].id === 0) {
-        newArray[x][y + 1].id = 2;
-      } else if (newArray[x][y + 1].id === 2) {
-        newArray[x][y + 1].id = 0;
-      }
-      if (newArray[x][y - 1].id === 0) {
-        newArray[x][y - 1].id = 2;
-      } else if (newArray[x][y - 1].id === 2) {
-        newArray[x][y - 1].id = 0;
-      }
-    };
-    if (newArray[x][y].id === 9) {
-      // select/deselect player
-      highlightTiles();
-    } else if (newArray[x][y].id === 2) {
-      // move to empty space
-      setEnemyTurn(true);
-      newArray.forEach((column, i) => {
-        column.forEach((tile, j) => {
-          if (newArray[i][j].id === 2) {
-            newArray[i][j].id = 0;
-          }
-        });
-      });
-      loop1: for (let i = 0; i < newArray.length; i++) {
-        for (let j = 0; j < newArray[i].length; j++) {
-          if (newArray[i][j].id === 9) {
-            if (newArray[x][y].status === "water") {
-              newArray[i][j].hp += 2;
-              newArray[x][y] = { ...newArray[i][j] };
-              newArray[i][j].id = 0;
-              newArray[i][j].hp = 0;
-              addMessage("Water! +2 HP");
-              addMessage("Keep moving!");
-              highlightTiles();
-              setEnemyTurn(false);
-            } else if (newArray[x][y].status === "junk") {
-              if (durability.current === 0) {
-                newArray[i][j].hp += 1;
-                newArray[x][y] = { ...newArray[i][j] };
-                newArray[i][j].id = 0;
-                newArray[i][j].hp = 0;
-                addMessage("You absorbed some metal and added it to your shell!");
-                addMessage("Durability increased!");
-                durability.current += 1;
-                const spikesDiv = document.getElementById('spikes');
-                spikesDiv.style.display = 'block';
-              } else if (durability.current === 1) {
-                newArray[i][j].hp += 1;
-                newArray[x][y] = { ...newArray[i][j] };
-                newArray[i][j].id = 0;
-                newArray[i][j].hp = 0;
-                addMessage("You absorbed some metal and added it to your shell!");
-                addMessage("Your shell is spiky!");
-                spikes.current += 1;
-              }
-             } else {
-              newArray[x][y] = { ...newArray[i][j] };
-              newArray[i][j].id = 0;
-              newArray[i][j].hp = 0;
-            }
-            break loop1;
-          }
-        }
-      }
-      // enemy moves
-    }
-    newArray.forEach((column) => {
-      column.forEach((tile) => {
-        if (tile.id === 9) {
-          health.current = tile.hp;
-        }
-      });
-    });
-    setTileColumns(newArray);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTile]);
+  }, [draw, enemyTurn, tileColumns, shell]);
 
   const handleCanvasClick = (e) => {
     const mouseCoordinates = {
@@ -334,7 +249,7 @@ export default function TestLevel() {
           (cellSize + padding)
       ) >= 0
     ) {
-      setActiveTile({
+      activeTile = {
         x: Math.floor(
           (mouseCoordinates.x -
             canvasRef.current.offsetLeft +
@@ -349,20 +264,114 @@ export default function TestLevel() {
             6) /
             (cellSize + padding)
         ),
-      });
+      };
     }
+        // click-to-move logic
+        const x = activeTile.x;
+        const y = activeTile.y;
+        let newArray = [];
+        tileColumns.forEach((column, i) => {
+          newArray[i] = [];
+          column.forEach((tile, j) => {
+            newArray[i][j] = { ...tileColumns[i][j] };
+          });
+        });
+        const highlightTiles = () => {
+          if (newArray[x + 1][y].id === 0) {
+            newArray[x + 1][y].id = 2;
+          } else if (newArray[x + 1][y].id === 2) {
+            newArray[x + 1][y].id = 0;
+          }
+          if (newArray[x - 1][y].id === 0) {
+            newArray[x - 1][y].id = 2;
+          } else if (newArray[x - 1][y].id === 2) {
+            newArray[x - 1][y].id = 0;
+          }
+          if (newArray[x][y + 1].id === 0) {
+            newArray[x][y + 1].id = 2;
+          } else if (newArray[x][y + 1].id === 2) {
+            newArray[x][y + 1].id = 0;
+          }
+          if (newArray[x][y - 1].id === 0) {
+            newArray[x][y - 1].id = 2;
+          } else if (newArray[x][y - 1].id === 2) {
+            newArray[x][y - 1].id = 0;
+          }
+        };
+        if (newArray[x][y].id === 9) {
+          // select/deselect player
+          highlightTiles();
+        } else if (newArray[x][y].id === 2) {
+          // move to empty space
+          setShell(false);
+          setEnemyTurn(true);
+          newArray.forEach((column, i) => {
+            column.forEach((tile, j) => {
+              if (newArray[i][j].id === 2) {
+                newArray[i][j].id = 0;
+              }
+            });
+          });
+          loop1: for (let i = 0; i < newArray.length; i++) {
+            for (let j = 0; j < newArray[i].length; j++) {
+              if (newArray[i][j].id === 9) {
+                if (newArray[x][y].status === "water") {
+                  newArray[i][j].hp += 2;
+                  newArray[x][y] = { ...newArray[i][j] };
+                  newArray[i][j].id = 0;
+                  newArray[i][j].hp = 0;
+                  addMessage("Water! +2 HP");
+                  addMessage("Keep moving!");
+                  highlightTiles();
+                  setEnemyTurn(false);
+                } else if (newArray[x][y].status === "junk") {
+                  if (durability.current === 0) {
+                    newArray[i][j].hp += 1;
+                    newArray[x][y] = { ...newArray[i][j] };
+                    newArray[i][j].id = 0;
+                    newArray[i][j].hp = 0;
+                    addMessage("You absorbed some metal and added it to your shell!");
+                    addMessage("Durability increased!");
+                    durability.current += 1;
+                    const spikesDiv = document.getElementById('spikes');
+                    spikesDiv.style.display = 'block';
+                  } else if (durability.current === 1) {
+                    newArray[i][j].hp += 1;
+                    newArray[x][y] = { ...newArray[i][j] };
+                    newArray[i][j].id = 0;
+                    newArray[i][j].hp = 0;
+                    addMessage("You absorbed some metal and added it to your shell!");
+                    addMessage("Your shell is spiky!");
+                    spikes.current += 1;
+                  }
+                 } else {
+                  newArray[x][y] = { ...newArray[i][j] };
+                  newArray[i][j].id = 0;
+                  newArray[i][j].hp = 0;
+                }
+                break loop1;
+              }
+            }
+          }
+          // enemy moves
+        }
+        newArray.forEach((column) => {
+          column.forEach((tile) => {
+            if (tile.id === 9) {
+              health.current = tile.hp;
+            }
+          });
+        });
+        setTileColumns(newArray);
   };
 
   const debugTileColumns = () => {
     // console.log(tileColumns);
   };
 
-  const handleScroll = (e) => {
-    if (e.nativeEvent.deltaY < 0) {
-      setCellSize(cellSize + 2);
-    } else {
-      setCellSize(cellSize - 2);
-    }
+  const toggleShell = () => {
+    setShell(true);
+    setEnemyTurn(true);
   }
 
   return (
@@ -378,12 +387,14 @@ export default function TestLevel() {
           <button onClick={() => setCellSize(cellSize - 2)}>
             Decrease board size
           </button>
+          <button onClick={toggleShell}>
+            Hide one turn
+          </button>
         </div>
         <Avatar health={health.current} durability={durability.current} spikes={spikes.current} />
       </div>
       <canvas
-        onWheel={(e) => handleScroll(e)}
-        onClick={(e) => handleCanvasClick(e)}
+        onClick={handleCanvasClick}
         ref={canvasRef}
         id="canvas"
         width={`${canvasWidth}`}

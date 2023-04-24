@@ -1,4 +1,4 @@
-export function enemyMoves(newArray, enemyStrength, addMessage, durability, health, spikes) {
+export function enemyMoves(newArray, enemyStrength, addMessage, durability, health, spikes, shell, setShell) {
   let playerX = 0;
   let playerY = 0;
   newArray.forEach((column, i) => {
@@ -119,7 +119,7 @@ export function enemyMoves(newArray, enemyStrength, addMessage, durability, heal
         }
 
         // pursue player
-        if (Math.abs(playerX - i) <= 2 && Math.abs(playerY - j <= 2)) {
+        if (Math.abs(playerX - i) <= 2 && Math.abs(playerY - j <= 2) && !shell) {
           if (playerX - i > 0 && randomChase > 6) {
             moveRight();
           } else if (playerX - i < 0 && randomChase > 6) {
@@ -136,6 +136,24 @@ export function enemyMoves(newArray, enemyStrength, addMessage, durability, heal
             moveRight();
           } else if (playerY - j === 0 && playerX - i < 0 && randomChase > 6) {
             moveLeft();
+          }
+        } else if (Math.abs(playerX - i) <= 2 && Math.abs(playerY - j <= 2) && shell) {     // avoid player
+          if (playerX - i > 0 && randomChase > 6) {
+            moveLeft();
+          } else if (playerX - i < 0 && randomChase > 6) {
+            moveRight();
+          } else if (playerY - j > 0 && randomChase < 5) {
+            moveUp();
+          } else if (playerY - j < 0 && randomChase < 5) {
+            moveDown();
+          } else if (playerX - i === 0 && playerY - j > 0 && randomChase < 5) {
+            moveUp();
+          } else if (playerX - i === 0 && playerY - j < 0 && randomChase < 5) {
+            moveDown();
+          } else if (playerY - j === 0 && playerX - i > 0 && randomChase > 6) {
+            moveLeft();
+          } else if (playerY - j === 0 && playerX - i < 0 && randomChase > 6) {
+            moveRight();
           }
         } else if (random === 1) {       // move at random
           moveUp();
