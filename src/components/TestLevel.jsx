@@ -2,7 +2,6 @@ import {
   useEffect,
   useState,
   useRef,
-  useCallback,
 } from "react";
 import { enemyMoves } from "../utils/enemyMoves";
 import Messages from "./Messages";
@@ -124,49 +123,49 @@ export default function TestLevel() {
   const addMessage = (message) => {
     messages.current.push(message);
   };
-
-
-  useEffect(() => {
-    if (enemyTurn) {
-      setTileColumns(
-        enemyMoves(tileColumns, enemyStrength, addMessage, durability, health, spikes, shell, setShell)
+  
+  if (enemyTurn) {
+    setTileColumns(
+      enemyMoves(tileColumns, enemyStrength, addMessage, durability, health, spikes, shell, setShell)
       );
       setEnemyTurn(false);
     }
+
+  useEffect(() => {
     const draw = () => {
       function renderSprite(src, i, j) {
-        const sprite = new Image();
+        let sprite = new Image();
         sprite.src = src;
-        sprite.onload = function () {
-        if (src === "/assets/player/snail-0.png" || src === "/assets/player/shell.png") {
+        sprite.onload = () => {
+          if (src === "/assets/player/snail-0.png" || src === "/assets/player/shell.png") {
             ctx.drawImage(
               sprite,
               i * (cellSize + padding) + cellSize / 4,
               j * (cellSize + padding) + cellSize / 4,
               cellSize / 2,
               cellSize / 2
-            );
-        } else {
-            ctx.drawImage(
-              sprite,
-              i * (cellSize + padding),
-              j * (cellSize + padding),
-              cellSize,
-              cellSize
-            )
-        };
-      }
-      }
-      function renderTile(src, i, j) {
-        const tile = new Image();
-        tile.src = src;
-        tile.onload = function () {
-          ctx.drawImage(
-            tile,
+              );
+          } else {
+              ctx.drawImage(
+            sprite,
             i * (cellSize + padding),
             j * (cellSize + padding),
             cellSize,
             cellSize
+            )
+          };
+        }
+      }
+      function renderTile(src, i, j) {
+        let tile = new Image();
+        tile.src = src;
+        tile.onload = () => {
+          ctx.drawImage(
+            tile,
+            i * (cellSize + padding),
+          j * (cellSize + padding),
+          cellSize,
+          cellSize
           );
         };
       }
@@ -193,7 +192,7 @@ export default function TestLevel() {
             renderTile("/assets/tiles/water.png", i, j);
           } else if (tile.status === "junk") {
             renderTile("/assets/tiles/junk.png", i, j)
-          } else {
+          } else if (tile.status === "none") {
             renderTile("/assets/tiles/grass.png", i, j);
           }
 
@@ -212,7 +211,7 @@ export default function TestLevel() {
     }
 
     draw();
-  }, [enemyTurn, tileColumns, shell, shadowCtx, canvasWidth, canvasHeight, cellSize]);
+  }, [enemyTurn, tileColumns, shell, canvasWidth, canvasHeight, cellSize]);
 
   const handleCanvasClick = (e) => {
     const mouseCoordinates = {
