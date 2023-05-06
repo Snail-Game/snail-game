@@ -2,6 +2,7 @@ import {
   useEffect,
   useState,
   useRef,
+  useMemo
 } from "react";
 import { enemyMoves } from "../utils/enemyMoves";
 import Messages from "./Messages";
@@ -20,7 +21,35 @@ export default function TestLevel() {
   const shadowCanvas = document.createElement('canvas');
   const shadowCtx = shadowCanvas.getContext('2d');
   
-  
+    // todo: load all images onto offscreen canvas, draw initial board when finished
+    // constantly loading new images is obviously the main cause of black flickering
+
+  const initRdy = useRef(false);
+  const imgCount = useRef(0);
+  const squirrelImg = useMemo(() => new Image(), []);
+  const snailImg = useMemo(() => new Image(), []);
+  const grassImg = useMemo(() => new Image(), []);
+  const wallImg = useMemo(() => new Image(), []);
+  const waterImg = useMemo(() => new Image(), []);
+  const junkImg = useMemo(() => new Image(), []);
+  const shellImg = useMemo(() => new Image(), []);
+  const imageLoad = [snailImg, squirrelImg, grassImg, wallImg, waterImg, junkImg, shellImg];
+  imageLoad.forEach((image) => {
+    image.onload = () => {
+      imgCount.current++;
+    }
+    image.onerror = () => {
+      console.log(`Error loading ${image}`);
+    };
+  })
+  snailImg.src = "/assets/player/snail.png";
+  squirrelImg.src = "/assets/enemies/squirrel.png";
+  grassImg.src = "/assets/tiles/grass.png";
+  wallImg.src = "/assets/tiles/wall.png";
+  waterImg.src = "/assets/tiles/water.png";
+  junkImg.src = "/assets/tiles/junk.png";
+  shellImg.src = "/assets/player/shell.png";
+   
   const [shell, setShell] = useState(false);
   const [enemyTurn, setEnemyTurn] = useState(false);
   const [cellSize, setCellSize] = useState(60);
@@ -123,66 +152,100 @@ export default function TestLevel() {
   const addMessage = (message) => {
     messages.current.push(message);
   };
-  
+
   if (enemyTurn) {
     setTileColumns(
       enemyMoves(tileColumns, enemyStrength, addMessage, durability, health, spikes, shell, setShell)
       );
-      setEnemyTurn(false);
-    }
-
+    setEnemyTurn(false);
+  }
+  
   useEffect(() => {
-    const draw = () => {
-      function renderSprite(src, i, j) {
-        let sprite = new Image();
-        sprite.src = src;
-        sprite.onload = () => {
-          if (src === "/assets/player/snail-0.png" || src === "/assets/player/shell.png") {
-            ctx.drawImage(
-              sprite,
-              i * (cellSize + padding) + cellSize / 4,
-              j * (cellSize + padding) + cellSize / 4,
-              cellSize / 2,
-              cellSize / 2
-              );
-          } else {
-              ctx.drawImage(
-            sprite,
-            i * (cellSize + padding),
-            j * (cellSize + padding),
-            cellSize,
-            cellSize
-            )
-          };
-        }
-      }
-      function renderTile(src, i, j) {
-        let tile = new Image();
-        tile.src = src;
-        tile.onload = () => {
-          ctx.drawImage(
-            tile,
-            i * (cellSize + padding),
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d");    
+    const renderSprite = (src, i, j) => {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");  
+      if (src === "/assets/player/snail.png") {
+        ctx.drawImage(
+          snailImg,
+          i * (cellSize + padding) + cellSize / 4,
+          j * (cellSize + padding) + cellSize / 4,
+          cellSize / 2,
+          cellSize / 2
+          );
+      } else if (src === "/assets/player/shell.png") {
+        ctx.drawImage(
+          shellImg,
+          i * (cellSize + padding) + cellSize / 4,
+          j * (cellSize + padding) + cellSize / 4,
+          cellSize / 2,
+          cellSize / 2
+          );
+      } else if (src === "/assets/enemies/squirrel.png") {
+        ctx.drawImage(
+          squirrelImg,
+          i * (cellSize + padding),
           j * (cellSize + padding),
           cellSize,
           cellSize
-          );
-        };
+          )
       }
-      function highlightTile(color, i, j) {
-        ctx.strokeStyle = color;
-        ctx.lineWidth = 3;
-        ctx.strokeRect(
+    };
+    const renderTile = (src, i, j) => {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+      if (src === "/assets/tiles/grass.png") {
+        ctx.drawImage(
+          grassImg,
+          i * (cellSize + padding),
+          j * (cellSize + padding),
+          cellSize,
+          cellSize
+        );
+      } else if (src === "/assets/tiles/wall.png") {
+        ctx.drawImage(
+          wallImg,
+          i * (cellSize + padding),
+          j * (cellSize + padding),
+          cellSize,
+          cellSize
+        );
+      } else if (src === "/assets/tiles/water.png") {
+        ctx.drawImage(
+          waterImg,
+          i * (cellSize + padding),
+          j * (cellSize + padding),
+          cellSize,
+          cellSize
+        );
+      } else if (src === "/assets/tiles/junk.png") {
+        ctx.drawImage(
+          junkImg,
           i * (cellSize + padding),
           j * (cellSize + padding),
           cellSize,
           cellSize
         );
       }
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext("2d");  
+    };
+    function highlightTile(color, i, j) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(
+        i * (cellSize + padding),
+        j * (cellSize + padding),
+        cellSize,
+        cellSize
+      );
+    }
+    console.log(imgCount.current);
+    if ( imgCount.current >= 7 ) {
+      initRdy.current = true;
+    }
+    console.log(initRdy.current);
+    if (initRdy) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
       tileColumns.forEach((column, i) => {
         column.forEach((tile, j) => {
           // render tiles
@@ -195,23 +258,20 @@ export default function TestLevel() {
           } else if (tile.status === "none") {
             renderTile("/assets/tiles/grass.png", i, j);
           }
-
-          // render sprites, handle logic
+          // render sprites
           if (tile.id === 9 && !shell) {
-            renderSprite("/assets/player/snail-0.png", i, j);
+            renderSprite("/assets/player/snail.png", i, j);
           } else if (tile.id === 9 && shell) {
             renderSprite("/assets/player/shell.png", i, j);
           } else if (tile.id === 8) {
-            renderSprite("/assets/enemies/squirrel-0.png", i, j);
+            renderSprite("/assets/enemies/squirrel.png", i, j);
           } else if (tile.id === 2) {
             highlightTile(moveColor, i, j);
           }
         });
       });
     }
-
-    draw();
-  }, [enemyTurn, tileColumns, shell, canvasWidth, canvasHeight, cellSize]);
+  }, [tileColumns, shell, canvasWidth, canvasHeight, cellSize, snailImg, shellImg, squirrelImg, grassImg, wallImg, waterImg, junkImg, initRdy, imgCount]);
 
   const handleCanvasClick = (e) => {
     const mouseCoordinates = {
@@ -252,113 +312,113 @@ export default function TestLevel() {
         ),
       };
     }
-        // click-to-move logic
-        const x = activeTile.x;
-        const y = activeTile.y;
-        let newArray = [];
-        tileColumns.forEach((column, i) => {
-          newArray[i] = [];
-          column.forEach((tile, j) => {
-            newArray[i][j] = { ...tileColumns[i][j] };
-          });
+    // click-to-move logic
+    const x = activeTile.x;
+    const y = activeTile.y;
+    let newArray = [];
+    tileColumns.forEach((column, i) => {
+      newArray[i] = [];
+      column.forEach((tile, j) => {
+        newArray[i][j] = { ...tileColumns[i][j] };
+      });
+    });
+    const highlightTiles = () => {
+      if (newArray[x + 1][y].id === 0) {
+        newArray[x + 1][y].id = 2;
+      } else if (newArray[x + 1][y].id === 2) {
+        newArray[x + 1][y].id = 0;
+      }
+      if (newArray[x - 1][y].id === 0) {
+        newArray[x - 1][y].id = 2;
+      } else if (newArray[x - 1][y].id === 2) {
+        newArray[x - 1][y].id = 0;
+      }
+      if (newArray[x][y + 1].id === 0) {
+        newArray[x][y + 1].id = 2;
+      } else if (newArray[x][y + 1].id === 2) {
+        newArray[x][y + 1].id = 0;
+      }
+      if (newArray[x][y - 1].id === 0) {
+        newArray[x][y - 1].id = 2;
+      } else if (newArray[x][y - 1].id === 2) {
+        newArray[x][y - 1].id = 0;
+      }
+    };
+    if (newArray[x][y].id === 9) {
+      // select/deselect player
+      highlightTiles();
+    } else if (newArray[x][y].id === 2) {
+      // move to empty space
+      setShell(false);
+      setEnemyTurn(true);
+      newArray.forEach((column, i) => {
+        column.forEach((tile, j) => {
+          if (newArray[i][j].id === 2) {
+            newArray[i][j].id = 0;
+          }
         });
-        const highlightTiles = () => {
-          if (newArray[x + 1][y].id === 0) {
-            newArray[x + 1][y].id = 2;
-          } else if (newArray[x + 1][y].id === 2) {
-            newArray[x + 1][y].id = 0;
-          }
-          if (newArray[x - 1][y].id === 0) {
-            newArray[x - 1][y].id = 2;
-          } else if (newArray[x - 1][y].id === 2) {
-            newArray[x - 1][y].id = 0;
-          }
-          if (newArray[x][y + 1].id === 0) {
-            newArray[x][y + 1].id = 2;
-          } else if (newArray[x][y + 1].id === 2) {
-            newArray[x][y + 1].id = 0;
-          }
-          if (newArray[x][y - 1].id === 0) {
-            newArray[x][y - 1].id = 2;
-          } else if (newArray[x][y - 1].id === 2) {
-            newArray[x][y - 1].id = 0;
-          }
-        };
-        if (newArray[x][y].id === 9) {
-          // select/deselect player
-          highlightTiles();
-        } else if (newArray[x][y].id === 2) {
-          // move to empty space
-          setShell(false);
-          setEnemyTurn(true);
-          newArray.forEach((column, i) => {
-            column.forEach((tile, j) => {
-              if (newArray[i][j].id === 2) {
+      });
+      loop1: for (let i = 0; i < newArray.length; i++) {
+        for (let j = 0; j < newArray[i].length; j++) {
+          if (newArray[i][j].id === 9) {
+            if (newArray[x][y].status === "water") {
+              newArray[i][j].hp += 2;
+              newArray[x][y] = { ...newArray[i][j] };
+              newArray[i][j].id = 0;
+              newArray[i][j].hp = 0;
+              addMessage("Water! +2 HP");
+              addMessage("Keep moving!");
+              highlightTiles();
+              setEnemyTurn(false);
+            } else if (newArray[x][y].status === "junk") {
+              if (durability.current === 0) {
+                newArray[i][j].hp += 1;
+                newArray[x][y] = { ...newArray[i][j] };
                 newArray[i][j].id = 0;
+                newArray[i][j].hp = 0;
+                addMessage("You absorbed some metal and added it to your shell!");
+                addMessage("Durability increased!");
+                durability.current += 1;
+                const spikesDiv = document.getElementById('spikes');
+                spikesDiv.style.display = 'block';
+              } else if (durability.current === 1) {
+                newArray[i][j].hp += 1;
+                newArray[x][y] = { ...newArray[i][j] };
+                newArray[i][j].id = 0;
+                newArray[i][j].hp = 0;
+                addMessage("You absorbed some metal and added it to your shell!");
+                addMessage("Your shell is spiky!");
+                spikes.current += 1;
               }
-            });
-          });
-          loop1: for (let i = 0; i < newArray.length; i++) {
-            for (let j = 0; j < newArray[i].length; j++) {
-              if (newArray[i][j].id === 9) {
-                if (newArray[x][y].status === "water") {
-                  newArray[i][j].hp += 2;
-                  newArray[x][y] = { ...newArray[i][j] };
-                  newArray[i][j].id = 0;
-                  newArray[i][j].hp = 0;
-                  addMessage("Water! +2 HP");
-                  addMessage("Keep moving!");
-                  highlightTiles();
-                  setEnemyTurn(false);
-                } else if (newArray[x][y].status === "junk") {
-                  if (durability.current === 0) {
-                    newArray[i][j].hp += 1;
-                    newArray[x][y] = { ...newArray[i][j] };
-                    newArray[i][j].id = 0;
-                    newArray[i][j].hp = 0;
-                    addMessage("You absorbed some metal and added it to your shell!");
-                    addMessage("Durability increased!");
-                    durability.current += 1;
-                    const spikesDiv = document.getElementById('spikes');
-                    spikesDiv.style.display = 'block';
-                  } else if (durability.current === 1) {
-                    newArray[i][j].hp += 1;
-                    newArray[x][y] = { ...newArray[i][j] };
-                    newArray[i][j].id = 0;
-                    newArray[i][j].hp = 0;
-                    addMessage("You absorbed some metal and added it to your shell!");
-                    addMessage("Your shell is spiky!");
-                    spikes.current += 1;
-                  }
-                 } else {
-                  newArray[x][y] = { ...newArray[i][j] };
-                  newArray[i][j].id = 0;
-                  newArray[i][j].hp = 0;
-                }
-                break loop1;
-              }
+              } else {
+              newArray[x][y] = { ...newArray[i][j] };
+              newArray[i][j].id = 0;
+              newArray[i][j].hp = 0;
             }
+            break loop1;
           }
-          // enemy moves
         }
-        newArray.forEach((column) => {
-          column.forEach((tile) => {
-            if (tile.id === 9) {
-              health.current = tile.hp;
-            }
-          });
-        });
-        setTileColumns(newArray);
+      }
+      // enemy moves
+    }
+    newArray.forEach((column) => {
+      column.forEach((tile) => {
+        if (tile.id === 9) {
+          health.current = tile.hp;
+        }
+      });
+    });
+    setTileColumns(newArray);
   };
 
   const debugTileColumns = () => {
-    // console.log(tileColumns);
+    console.log(tileColumns);
   };
 
   const toggleShell = () => {
     setShell(true);
     setEnemyTurn(true);
-  }
+  };
 
   return (
     <div id="main">
