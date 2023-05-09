@@ -1,4 +1,4 @@
-export function enemyMoves(newArray, enemyStrength, addMessage, durability, health, spikes, shell, setShell) {
+export function enemyMoves(newArray, enemyStrength, addMessage, health, spikes, shell, durability) {
   let playerX = 0;
   let playerY = 0;
   newArray.forEach((column, i) => {
@@ -21,7 +21,7 @@ export function enemyMoves(newArray, enemyStrength, addMessage, durability, heal
           column.forEach((tile, j) => {
             newArray2[i][j] = {...tile};
           })
-        })
+        });
         const moveRight = () => {
           if (newArray[i + 1][j].id === 0) {
             newArray2[i + 1][j] = {...newArray[i][j]};
@@ -29,13 +29,18 @@ export function enemyMoves(newArray, enemyStrength, addMessage, durability, heal
             newArray2[i][j].hp = 0;
           } else if (newArray[i + 1][j].id === 9) {
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
-            newArray2[i + 1][j].hp -= enemyAttack;
+            newArray2[i + 1][j].hp -= (enemyAttack - durability.current);
             newArray2[i][j].hp -= spikes.current;
-            // draw damage animation here
+            // todo: draw damage animation here
             addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
-            addMessage('Enemy takes ' + spikes.current + ' damage!');
+            if (durability.current > 0) {
+              addMessage('But your durable shell absorbed ' + durability.current + ' damage!');
+            }
+            if (spikes.current > 0) {
+              addMessage('Enemy takes ' + spikes.current + ' damage from your spikes!');
+            }
             if (newArray2[i + 1][j].hp <= 0) {
-              newArray2[i + 1][j].id = 0;
+              newArray2[i + 1][j].id = 4;
               newArray2[i + 1][j].hp = 0;
               addMessage('GAME OVER');
             }
@@ -53,13 +58,18 @@ export function enemyMoves(newArray, enemyStrength, addMessage, durability, heal
             newArray2[i][j].hp = 0;
           } else if (newArray[i][j - 1].id === 9) {
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
-            newArray2[i][j - 1].hp -= enemyAttack;
+            newArray2[i][j - 1].hp -= (enemyAttack - durability.current);
             newArray2[i][j].hp -= spikes.current;
             // draw damage animation here
             addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
-            addMessage('Enemy takes ' + spikes.current + ' damage!');
+            if (durability.current > 0) {
+              addMessage('But your durable shell absorbed ' + durability.current + ' damage!');
+            }
+            if (spikes.current > 0) {
+              addMessage('Enemy takes ' + spikes.current + ' damage from your spikes!');
+            }
             if (newArray2[i][j - 1].hp <= 0) {
-              newArray2[i][j - 1].id = 0;
+              newArray2[i][j - 1].id = 4;
               newArray2[i][j - 1].hp = 0;
             }
             if (newArray2[i][j].hp <= 0) {
@@ -76,13 +86,18 @@ export function enemyMoves(newArray, enemyStrength, addMessage, durability, heal
             newArray2[i][j].hp = 0;
           } else if (newArray[i][j + 1].id === 9) {
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
-            newArray2[i][j + 1].hp -= enemyAttack;
+            newArray2[i][j + 1].hp -= (enemyAttack - durability.current);
             newArray2[i][j].hp -= spikes.current;
             // draw damage animation here
             addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
-            addMessage('Enemy takes ' + spikes.current + ' damage!');
+            if (durability.current > 0) {
+              addMessage('But your durable shell absorbed ' + durability.current + ' damage!');
+            }
+            if (spikes.current > 0) {
+              addMessage('Enemy takes ' + spikes.current + ' damage from your spikes!');
+            }
             if (newArray2[i][j + 1].hp <= 0) {
-              newArray2[i][j + 1].id = 0;
+              newArray2[i][j + 1].id = 4;
               newArray2[i][j + 1].hp = 0;
               addMessage('GAME OVER');
             }
@@ -100,13 +115,18 @@ export function enemyMoves(newArray, enemyStrength, addMessage, durability, heal
             newArray2[i][j].hp = 0;
           } else if (newArray[i - 1][j].id === 9) {
             const enemyAttack = Math.ceil(Math.random() * enemyStrength);
-            newArray2[i - 1][j].hp -= enemyAttack;
+            newArray2[i - 1][j].hp -= (enemyAttack - durability.current);
             newArray2[i][j].hp -= spikes.current;
             // draw damage animation here
             addMessage('Enemy attacks you for ' + enemyAttack + ' damage!');
-            addMessage('Enemy takes ' + spikes.current + ' damage!');
+            if (durability.current > 0) {
+              addMessage('But your durable shell absorbed ' + durability.current + ' damage!');
+            }
+            if (spikes.current > 0) {
+            addMessage('Enemy takes ' + spikes.current + ' damage from your spikes!');
+            }
             if (newArray2[i - 1][j].hp <= 0) {
-              newArray2[i - 1][j].id = 0;
+              newArray2[i - 1][j].id = 4;
               newArray2[i - 1][j].hp = 0;
               addMessage('GAME OVER');
             }
@@ -166,7 +186,7 @@ export function enemyMoves(newArray, enemyStrength, addMessage, durability, heal
         }
         newArray2.forEach((column) => {
           column.forEach((tile) => {
-            if (tile.id === 9) {
+            if (tile.id === 9 || tile.id === 4) {
               health.current = tile.hp;
             }
           });

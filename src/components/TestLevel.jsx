@@ -18,30 +18,32 @@ export default function TestLevel() {
   const moveColor = "#FFD700";
   const padding = 2;
   const enemyStrength = 3;
-  const shadowCanvas = document.createElement('canvas');
-  const shadowCtx = shadowCanvas.getContext('2d');
-  
-    // todo: load all images onto offscreen canvas, draw initial board when finished
-    // constantly loading new images is obviously the main cause of black flickering
 
-  const initRdy = useRef(false);
   const imgCount = useRef(0);
-  const squirrelImg = useMemo(() => new Image(), []);
   const snailImg = useMemo(() => new Image(), []);
+  const squirrelImg = useMemo(() => new Image(), []);
   const grassImg = useMemo(() => new Image(), []);
   const wallImg = useMemo(() => new Image(), []);
   const waterImg = useMemo(() => new Image(), []);
   const junkImg = useMemo(() => new Image(), []);
   const shellImg = useMemo(() => new Image(), []);
-  const imageLoad = [snailImg, squirrelImg, grassImg, wallImg, waterImg, junkImg, shellImg];
+  const deadsnailImg = useMemo(() => new Image(), []);
+  const totalNumImgs = 8;
+  const imageLoad = [snailImg, squirrelImg, grassImg, wallImg, waterImg, junkImg, shellImg, deadsnailImg];
   imageLoad.forEach((image) => {
     image.onload = () => {
-      imgCount.current++;
+      if (imgCount.current < totalNumImgs) {
+        imgCount.current++;
+      }
+      if (imgCount.current === totalNumImgs) {
+        setInitRdy(true);
+      }
     }
     image.onerror = () => {
       console.log(`Error loading ${image}`);
     };
   })
+  
   snailImg.src = "/assets/player/snail.png";
   squirrelImg.src = "/assets/enemies/squirrel.png";
   grassImg.src = "/assets/tiles/grass.png";
@@ -49,22 +51,25 @@ export default function TestLevel() {
   waterImg.src = "/assets/tiles/water.png";
   junkImg.src = "/assets/tiles/junk.png";
   shellImg.src = "/assets/player/shell.png";
-   
+  deadsnailImg.src = "/assets/player/deadsnail.png";
+  
   const [shell, setShell] = useState(false);
   const [enemyTurn, setEnemyTurn] = useState(false);
   const [cellSize, setCellSize] = useState(60);
   let canvasWidth = 8 * (cellSize + padding) - padding;
   let canvasHeight = 8 * (cellSize + padding) - padding;
+  const [initRdy, setInitRdy] = useState(false);
   const [tileColumns, setTileColumns] = useState([
     /* 
       IDs for tiles: 
-        0 = floor
-        1 = wall
-        2 = available to move, highlighted tile
-        3 = enemy highlighted to attack
-        8 = enemy
-        9 = player
-        4-7 ... unused
+      0 = floor
+      1 = wall
+      2 = available to move, highlighted tile
+      3 = enemy highlighted to attack
+      4 = dead snail
+      8 = enemy
+      9 = player
+      5-7 ... unused
     */
     [
       { id: 1, hp: 0, status: "wall" },
@@ -155,11 +160,11 @@ export default function TestLevel() {
 
   if (enemyTurn) {
     setTileColumns(
-      enemyMoves(tileColumns, enemyStrength, addMessage, durability, health, spikes, shell, setShell)
-      );
+      enemyMoves(tileColumns, enemyStrength, addMessage, health, spikes, shell, durability)
+    );
     setEnemyTurn(false);
   }
-  
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");    
@@ -189,6 +194,14 @@ export default function TestLevel() {
           j * (cellSize + padding),
           cellSize,
           cellSize
+          )
+      } else if (src === "/assets/player/deadsnail.png") {
+        ctx.drawImage(
+          deadsnailImg,
+          i * (cellSize + padding) + cellSize / 4,
+          j * (cellSize + padding) + cellSize / 4,
+          cellSize / 2,
+          cellSize / 2
           )
       }
     };
@@ -239,11 +252,6 @@ export default function TestLevel() {
         cellSize
       );
     }
-    console.log(imgCount.current);
-    if ( imgCount.current >= 7 ) {
-      initRdy.current = true;
-    }
-    console.log(initRdy.current);
     if (initRdy) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       tileColumns.forEach((column, i) => {
@@ -267,11 +275,13 @@ export default function TestLevel() {
             renderSprite("/assets/enemies/squirrel.png", i, j);
           } else if (tile.id === 2) {
             highlightTile(moveColor, i, j);
+          } else if (tile.id === 4) {
+            renderSprite("/assets/player/deadsnail.png", i, j);
           }
         });
       });
     }
-  }, [tileColumns, shell, canvasWidth, canvasHeight, cellSize, snailImg, shellImg, squirrelImg, grassImg, wallImg, waterImg, junkImg, initRdy, imgCount]);
+  }, [tileColumns, shell, cellSize, snailImg, shellImg, squirrelImg, grassImg, wallImg, waterImg, junkImg, imgCount, initRdy, deadsnailImg]);
 
   const handleCanvasClick = (e) => {
     const mouseCoordinates = {
