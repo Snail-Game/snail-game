@@ -1,12 +1,15 @@
-import './App.css';
-import Canvas from './Canvas';
+import "./App.css";
+import TestLevel from "./components/TestLevel";
+import Canvas from "./components/Canvas";
+import { Routes, Route } from 'react-router-dom';
 
 function App() {
-
-
   return (
-    <div className="mother">
-        <Canvas />
+    <div id="app">
+      <Routes>
+        <Route path='/' element={<TestLevel />} />
+        <Route path='/leveleditor' element={<Canvas />} />
+      </Routes>
     </div>
   );
 }
